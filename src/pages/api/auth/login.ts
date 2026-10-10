@@ -82,12 +82,13 @@ export const POST: APIRoute = async (context) => {
     return redirect("/login?error=invalid");
   }
 
-  if (!(await resetLoginLockout(locals, user.id))) {
+  if (!(await resetLoginLockout(locals, user.id, user.password_hash))) {
+    // Either a concurrent lock, or the credential changed after we verified it.
     logFailedLogin(request, email, "locked");
     return redirect("/login?error=locked");
   }
 
-  const session = await createSession(locals, user.id);
+  const session = await createSession(locals, user.id, user.password_hash);
   if (!session) return redirect("/login?error=invalid");
   cookies.set(SESSION_COOKIE, session.token, {
     path: "/",

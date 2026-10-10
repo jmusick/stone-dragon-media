@@ -58,11 +58,20 @@ export async function getUserCount(locals: App.Locals): Promise<number> {
   return row?.count ?? 0;
 }
 
-export async function verifyUserPassword(locals: App.Locals, userId: string, password: string): Promise<boolean> {
+/**
+ * Returns the stored hash that `password` was verified against, or null. Pass
+ * it to `updateUserPassword` so the write only lands if the credential is
+ * still the one that was verified.
+ */
+export async function verifyUserPasswordHash(locals: App.Locals, userId: string, password: string): Promise<string | null> {
   const db = ensureDB(locals);
   const row = await db.prepare("SELECT password_hash FROM users WHERE id = ? LIMIT 1").bind(userId).first<{ password_hash: string }>();
-  if (!row) return false;
-  return verifyPassword(password, row.password_hash);
+  if (!row) return null;
+  return (await verifyPassword(password, row.password_hash)) ? row.password_hash : null;
+}
+
+export async function verifyUserPassword(locals: App.Locals, userId: string, password: string): Promise<boolean> {
+  return (await verifyUserPasswordHash(locals, userId, password)) !== null;
 }
 
 /**
@@ -99,22 +108,33 @@ export async function updateUserProfile(
  * password change on suspicion of compromise actually logs the attacker out.
  * Pass the acting request's own session id as `keepSessionId` to avoid logging
  * the user out of the browser they just changed it in.
+ *
+ * `verifiedPasswordHash` is the hash the current password was checked against.
+ * The write applies only if the account still holds it, so a stale
+ * reauthentication cannot overwrite a concurrent change or admin reset.
+ * Returns false (and changes nothing) when the credential moved underneath us.
  */
 export async function updateUserPassword(
   locals: App.Locals,
   userId: string,
   newPassword: string,
+  verifiedPasswordHash: string,
   keepSessionId?: string
-): Promise<void> {
+): Promise<boolean> {
   const db = ensureDB(locals);
   const passwordHash = await hashPassword(newPassword);
-  await db.batch([
-    db.prepare("UPDATE users SET password_hash = ?, must_change_password = 0, temporary_password_expires_at = NULL WHERE id = ?").bind(passwordHash, userId),
-    db.prepare("DELETE FROM password_flash WHERE user_id = ?").bind(userId),
+  // The follow-up deletes are guarded on the new hash being in place (salts are
+  // random, so it is unique to this call) — they run only if the UPDATE applied.
+  const applied = "EXISTS (SELECT 1 FROM users WHERE id = ? AND password_hash = ?)";
+  const [update] = await db.batch([
+    db.prepare("UPDATE users SET password_hash = ?, must_change_password = 0, temporary_password_expires_at = NULL WHERE id = ? AND password_hash = ?")
+      .bind(passwordHash, userId, verifiedPasswordHash),
+    db.prepare(`DELETE FROM password_flash WHERE user_id = ? AND ${applied}`).bind(userId, userId, passwordHash),
     keepSessionId
-      ? db.prepare("DELETE FROM sessions WHERE user_id = ? AND id != ?").bind(userId, keepSessionId)
-      : db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(userId),
+      ? db.prepare(`DELETE FROM sessions WHERE user_id = ? AND id != ? AND ${applied}`).bind(userId, keepSessionId, userId, passwordHash)
+      : db.prepare(`DELETE FROM sessions WHERE user_id = ? AND ${applied}`).bind(userId, userId, passwordHash),
   ]);
+  return update.meta.changes === 1;
 }
 
 const LOGIN_LOCK_THRESHOLD = 8;
@@ -162,11 +182,14 @@ export async function recordFailedLogin(
   return { attempts: row.failed_attempts, lockedUntil: row.locked_until };
 }
 
-/** A valid password must not clear a lock established by concurrent failures. */
-export async function resetLoginLockout(locals: App.Locals, userId: string): Promise<boolean> {
+/**
+ * A valid password must not clear a lock established by concurrent failures,
+ * nor touch an account whose credential changed after it was verified.
+ */
+export async function resetLoginLockout(locals: App.Locals, userId: string, verifiedPasswordHash: string): Promise<boolean> {
   const db = ensureDB(locals);
   const row = await db.prepare(`UPDATE users SET failed_attempts = 0, locked_until = NULL
-    WHERE id = ? AND is_active = 1 AND (locked_until IS NULL OR locked_until <= ?)
-    RETURNING id`).bind(userId, Date.now()).first<{ id: string }>();
+    WHERE id = ? AND is_active = 1 AND password_hash = ? AND (locked_until IS NULL OR locked_until <= ?)
+    RETURNING id`).bind(userId, verifiedPasswordHash, Date.now()).first<{ id: string }>();
   return row !== null;
 }

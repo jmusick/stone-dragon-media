@@ -94,16 +94,32 @@ export async function verifyPasswordDummy(password: string): Promise<boolean> {
   return verifyPassword(password, DUMMY_PASSWORD_HASH);
 }
 
-export async function createSession(locals: App.Locals, userId: string): Promise<{ token: string; expiresAt: number } | null> {
+/**
+ * Issues a session only if, at insertion time, the account still holds the
+ * credential the caller verified (`verifiedPasswordHash`), is active, is not
+ * locked, and any temporary-credential deadline has not passed. Checking in the
+ * INSERT itself closes the window in which a password change/reset (or lock,
+ * archive, expiry) can land between verification and session creation.
+ */
+export async function createSession(
+  locals: App.Locals,
+  userId: string,
+  verifiedPasswordHash: string
+): Promise<{ token: string; expiresAt: number } | null> {
   const db = ensureDB(locals);
   const token = crypto.randomUUID();
   const id = await hashSessionToken(token);
-  const expiresAt = Date.now() + SESSION_DURATION_MS;
+  const now = Date.now();
+  const expiresAt = now + SESSION_DURATION_MS;
 
   const result = await db
     .prepare(`INSERT INTO sessions (id, user_id, expires_at, created_at)
-      SELECT ?, id, ?, ? FROM users WHERE id = ? AND is_active = 1`)
-    .bind(id, expiresAt, Date.now(), userId)
+      SELECT ?, id, ?, ? FROM users
+      WHERE id = ? AND is_active = 1 AND password_hash = ?
+        AND (locked_until IS NULL OR locked_until <= ?)
+        AND (must_change_password = 0
+          OR (temporary_password_expires_at IS NOT NULL AND temporary_password_expires_at > ?))`)
+    .bind(id, expiresAt, now, userId, verifiedPasswordHash, now, now)
     .run();
 
   if (result.meta.changes !== 1) return null;

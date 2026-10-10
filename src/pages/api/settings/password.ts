@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { readForm } from "../../../lib/request-body";
 import { requireUser } from "../../../lib/http";
-import { verifyUserPassword, updateUserPassword } from "../../../lib/users";
+import { verifyUserPasswordHash, updateUserPassword } from "../../../lib/users";
 import { passwordError } from "../../../lib/password-policy";
 
 export const prerender = false;
@@ -23,11 +23,14 @@ export const POST: APIRoute = async (context) => {
     return redirect(`${backTo}?error=password_mismatch`);
   }
 
-  const isCurrentValid = await verifyUserPassword(locals, user.id, currentPassword);
-  if (!isCurrentValid) {
+  const verifiedHash = await verifyUserPasswordHash(locals, user.id, currentPassword);
+  if (!verifiedHash) {
     return redirect(`${backTo}?error=wrong_password`);
   }
 
-  await updateUserPassword(locals, user.id, newPassword, locals.session?.id);
+  const changed = await updateUserPassword(locals, user.id, newPassword, verifiedHash, locals.session?.id);
+  // The credential changed (e.g. an admin reset) after we verified it; the
+  // submitted current password is no longer the right one.
+  if (!changed) return redirect(`${backTo}?error=wrong_password`);
   return redirect(`${backTo}?saved=password`);
 };

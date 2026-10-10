@@ -101,6 +101,7 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
   SHA-256 (`hashSessionToken`) — a D1 dump can't be replayed. Login runs a dummy PBKDF2
   (`verifyPasswordDummy`) on an unknown/inactive email so latency isn't a user-enumeration oracle.
   Login counts failures atomically (eight failures lock for 15 minutes); blocked requests do not extend the lock, expiry starts a fresh count, and a successful login cannot clear an active concurrent lock.
+  Session issuance is bound to the credential that was verified: `createSession` takes the verified hash and its INSERT also checks active, unlocked and unexpired-temporary state, so a password change or reset between verify and insert yields no session. Self-service `updateUserPassword` is compare-and-swap on that hash and returns false (changing nothing) if an admin reset landed first. `scripts/test-session-credential-race.mjs` pins these interleavings.
   Every failed sign-in is logged as one JSON line (`event: "login_failed"`, reason, email, IP,
   country, UA — never the password) to Workers Logs, enabled by `[observability]` in `wrangler.toml`;
   the privacy policy discloses this with a 7-day retention, so keep them in step.
