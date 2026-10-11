@@ -1,7 +1,7 @@
 {
   "name": "sdm",
   "type": "module",
-  "version": "2.25.6",
+  "version": "2.25.7",
   "license": "SEE LICENSE IN LICENSE.md",
   "engines": {
     "node": ">=22.19.0"
@@ -29,13 +29,14 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "typescript": "^6.0.3",
-    "wrangler": "^4.143.0"
+    "wrangler": "^4.149.0"
   },
   "allowScripts": {
     "esbuild@0.28.1": true,
     "sharp@0.34.5": true,
     "sharp@0.35.2": true,
     "workerd@1.20261001.1": true,
+    "workerd@1.20261006.1": true,
     "esbuild@0.28.2": true
   }
 }
