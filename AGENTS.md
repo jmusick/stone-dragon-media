@@ -178,7 +178,7 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
   (its optional `breadcrumbParent` makes that trail three-level for pages under a hub, like the
   service subpages), `Organization`/`LocalBusiness` on `index`, plus a per-page `Service`/
   `CollectionPage`/`SoftwareApplication`/`AboutPage`/`ContactPage`. Keep `areaServed` identical to the
-  visible "Areas We Serve" list. No street address anywhere (home-based business) — city/state only.
+  visible "Areas We Serve" list — both render from `src/lib/service-area.ts`. No street address anywhere (home-based business) — city/state only.
 - **Owned publications and products:** Firelands Current is owned and operated by Stone Dragon Media, LLC. It appears on `/work` and `/products` alongside Tagstash; describe its shipped news, events, and community features. Chomp Chomp Panic! appears in `/products`' Upcoming Products section as a kaiju game currently in development; do not imply it has launched. The products page uses `CollectionPage` with `WebSite` (Firelands Current), `SoftwareApplication` (Tagstash), and `VideoGame` (Chomp Chomp Panic!) entries. Portfolio screenshots live in `public/work/`; game title artwork lives in `public/products/`.
 - **No FAQ section, deliberately** — a prior one duplicated content above it and was removed. If
   revisited, only answer things not covered elsewhere, and only with the Q&A visibly on the page.
@@ -186,6 +186,12 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
   the two services in each, their copy, icons, and anchor ids. It feeds the `/services` hub, the
   `[category].astro` subpages, all of their JSON-LD, the header dropdown, and `/sitemap`. Anchor ids
   are linked from `/` and `/about` as `/services/<slug>/#<service-id>` — renaming means updating those.
+- **`src/lib/service-area.ts`** is the single source of truth for service coverage: `inPersonCities`
+  (the authorized in-person ring) feeds the homepage "Areas We Serve" list, the homepage
+  `LocalBusiness`/`Organization` `areaServed`, and every `Service` `areaServed` on
+  `/services/<category>/`. `remoteCoverage` (Columbus/Akron/Canton/Lima plus anywhere in the US) is
+  visible copy only and never goes in `areaServed`. The Toledo-to-Cleveland sentences on the
+  services hub and `/about` are hand-written prose; keep them consistent with this file.
 - **`src/lib/social.ts`** is the single source of truth for social profile URLs, feeding
   `SocialLinks.astro` and the homepage JSON-LD `sameAs`. The Google Business Profile is the canonical
   `maps?cid=` URL, never a `share.google`/`maps.app.goo.gl` redirect; never add a guessed URL. Brand
@@ -301,6 +307,7 @@ assumptions. Base client-work claims on what actually shipped, not what a typica
 local SEO without asking, but the "Areas We Serve" list/`areaServed` JSON-LD covers only the in-person
 ring (~1 hour from Sandusky); farther cities go in the following sentence, named as remote. Don't move
 Columbus/Akron/Canton/Lima back into the in-person list — removed for overclaiming the radius.
+Edit the city list only in `src/lib/service-area.ts`.
 
 Contact-form keys (Web3Forms `access_key`, hCaptcha `sitekey`) are inlined in `contact.astro` — don't
 copy them into docs or new files. `/privacy-policy` covers both the marketing form/analytics and
