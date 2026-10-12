@@ -5,6 +5,7 @@ import SiteFooter from "../../components/SiteFooter.astro";
 import PageHero from "../../components/PageHero.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { serviceCategories, type ServiceCategory } from "../../lib/services";
+import { inPersonAreaServed } from "../../lib/service-area";
 
 export const prerender = true;
 
@@ -55,7 +56,7 @@ const siblings = serviceCategories.filter((other) => other.slug !== category.slu
             "name": "Stone Dragon Media",
             "url": "https://stonedragonmedia.com"
           },
-          "areaServed": { "@type": "AdministrativeArea", "name": "Erie County, OH" }
+          "areaServed": inPersonAreaServed
         }
       }))
     })} />

@@ -5,6 +5,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import PageHero from "../components/PageHero.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { socialProfileUrls } from "../lib/social";
+import { inPersonCities, inPersonAreaServed, remoteCoverage, joinList } from "../lib/service-area";
 
 export const prerender = true;
 
@@ -35,37 +36,7 @@ export const prerender = true;
         "addressRegion": "OH",
         "addressCountry": "US"
       },
-      "areaServed": [
-        "Sandusky, OH",
-        "Erie County, OH",
-        "Huron, OH",
-        "Castalia, OH",
-        "Milan, OH",
-        "Berlin Heights, OH",
-        "Vermilion, OH",
-        "Wakeman, OH",
-        "Norwalk, OH",
-        "Monroeville, OH",
-        "Bellevue, OH",
-        "Clyde, OH",
-        "Willard, OH",
-        "New London, OH",
-        "Fremont, OH",
-        "Tiffin, OH",
-        "Port Clinton, OH",
-        "Marblehead, OH",
-        "Catawba Island, OH",
-        "Oak Harbor, OH",
-        "Kelleys Island, OH",
-        "Put-in-Bay, OH",
-        "Amherst, OH",
-        "Oberlin, OH",
-        "Toledo, OH",
-        "Cleveland, OH",
-        "Lorain, OH",
-        "Elyria, OH",
-        "US"
-      ],
+      "areaServed": inPersonAreaServed,
       "sameAs": socialProfileUrls
     })} />
     <style>
@@ -269,35 +240,13 @@ export const prerender = true;
           Sandusky, Erie County, and the surrounding communities:
         </p>
         <ul class="areas-list">
-          <li>Sandusky</li>
-          <li>Huron</li>
-          <li>Castalia</li>
-          <li>Milan</li>
-          <li>Berlin Heights</li>
-          <li>Vermilion</li>
-          <li>Wakeman</li>
-          <li>Norwalk</li>
-          <li>Monroeville</li>
-          <li>Bellevue</li>
-          <li>Clyde</li>
-          <li>Willard</li>
-          <li>New London</li>
-          <li>Fremont</li>
-          <li>Tiffin</li>
-          <li>Port Clinton</li>
-          <li>Marblehead</li>
-          <li>Catawba Island</li>
-          <li>Oak Harbor</li>
-          <li>Kelleys Island</li>
-          <li>Put-in-Bay</li>
-          <li>Amherst</li>
-          <li>Oberlin</li>
+          {inPersonCities.map((city) => <li>{city}</li>)}
         </ul>
         <p>
           We also meet clients in person within about an hour&rsquo;s drive &mdash; Toledo to the
           west, Cleveland to the east, and the Lorain and Elyria corridor in between. Farther out,
-          including Columbus, Akron, Canton, and Lima, we work remotely, as we do with clients
-          anywhere in the US.
+          including {joinList(remoteCoverage.exampleCities)}, we work remotely, as we do with
+          {remoteCoverage.scope}.
         </p>
       </div>
     </section>
