@@ -100,6 +100,13 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
   via Web Crypto, no external provider. The cookie holds a raw token; `sessions.id` stores only its
   SHA-256 (`hashSessionToken`) — a D1 dump can't be replayed. Login runs a dummy PBKDF2
   (`verifyPasswordDummy`) on an unknown/inactive email so latency isn't a user-enumeration oracle.
+  **Don't raise `PASSWORD_ITERATIONS` above 100,000.** Cloudflare's production Web Crypto rejects
+  PBKDF2 iteration counts above 100k (local workerd doesn't, so it passes locally and breaks every
+  production login), and the Free plan's 10 ms CPU budget leaves no headroom. Staying at 100k plus
+  the online rate limits is a deliberate decision (2026-10-12, issue #4). The evaluated upgrade path,
+  an AES-GCM pepper wrap of stored hashes and chained rounds on Workers Paid, is written up in the
+  project library's `Documents/Reviews/2026-10-12 Password Hash Hardening Options.md`. Revisit it
+  if the plan changes.
   Login counts failures atomically (eight failures lock for 15 minutes); blocked requests do not extend the lock, expiry starts a fresh count, and a successful login cannot clear an active concurrent lock.
   Session issuance is bound to the credential that was verified: `createSession` takes the verified hash and its INSERT also checks active, unlocked and unexpired-temporary state, so a password change or reset between verify and insert yields no session. Self-service `updateUserPassword` is compare-and-swap on that hash and returns false (changing nothing) if an admin reset landed first. `scripts/test-session-credential-race.mjs` pins these interleavings.
   Every failed sign-in is logged as one JSON line (`event: "login_failed"`, reason, email, IP,
