@@ -111,7 +111,8 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
   Session issuance is bound to the credential that was verified: `createSession` takes the verified hash and its INSERT also checks active, unlocked and unexpired-temporary state, so a password change or reset between verify and insert yields no session. Self-service `updateUserPassword` is compare-and-swap on that hash and returns false (changing nothing) if an admin reset landed first. `scripts/test-session-credential-race.mjs` pins these interleavings.
   Every failed sign-in is logged as one JSON line (`event: "login_failed"`, reason, email, IP,
   country, UA — never the password) to Workers Logs, enabled by `[observability]` in `wrangler.toml`;
-  the privacy policy discloses this with a 7-day retention, so keep them in step.
+  the privacy policy discloses this with a 3-day retention (Workers Free; Paid keeps 7), so keep
+  them in step if the plan changes.
 - `/admin/setup` + `/api/setup/create-admin` bootstrap the first admin. Gated on **both** 0 users
   **and** env var `ADMIN_SETUP_ENABLED === "true"` (`src/lib/setup.ts`) — plus a separately provisioned `ADMIN_SETUP_SECRET` of at least 32 characters; the form requires that secret and creation atomically checks for an empty users table. A future ISO `ADMIN_SETUP_EXPIRES_AT` deadline within 15 minutes is also required; expired/missing deadlines disable setup. All are normally unset, so both
   302 → `/login`. Set it on the Worker (dashboard → Variables and Secrets) only for a deliberate re-bootstrap, then
@@ -152,7 +153,7 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
   `users.must_change_password = 1`; middleware pins them to `/dashboard/settings?mustchange=1` (or
   `/admin/settings`) until they set a real password, which clears the flag.
 
-Generic Worker failures return controlled responses with security headers and private portal caching. Session-resolution failures clear all auth state and return 503. Operational diagnostics log only failure stage and status to the same seven-day Workers log sink, without exception messages or submitted data.
+Generic Worker failures return controlled responses with security headers and private portal caching. Session-resolution failures clear all auth state and return 503. Operational diagnostics log only failure stage and status to the same three-day (Workers Free) log sink, without exception messages or submitted data.
 
 Expensive auth work uses shared atomic D1 source/account budgets with 15-minute windows: login 40/source and 16/email, reauthentication/reset 20/source and 5/actor, setup 10/source, client ticket writes 40/source and 20/account. Keys are SHA-256 digests; missing edge IP metadata shares a conservative bucket. Expired rows are removed on subsequent limiter activity; inactive rows and provider backups may persist. Every host running this Worker uses the same DB budgets; edge WAF/hostname behavior still requires production verification. Migration 0010 must be applied before deploying these changes.
 
