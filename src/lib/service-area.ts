@@ -36,6 +36,10 @@ export const inPersonCities: string[] = [
   "Put-in-Bay",
   "Amherst",
   "Oberlin",
+  "Lorain",
+  "Elyria",
+  "Toledo",
+  "Cleveland",
 ];
 
 /** In-person cities as "City, ST" strings, for schema.org `areaServed`. */
