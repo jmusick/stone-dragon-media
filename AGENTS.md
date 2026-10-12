@@ -197,6 +197,14 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
   `/services/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
   `sourceFilesFor()`. A shallow clone skips `lastmod` rather than guess; the `prebuild` script (`scripts/unshallow.mjs`) unshallows Workers Builds' clone first so production still gets it. `/sitemap` is a
   separate human-facing HTML page with its own `pages` array; update it when a marketing page changes.
+- **Slashless marketing URLs get a permanent 308.** Workers static assets answer `/about` with a 307
+  to `/about/` by default, so the `permanentSlashRedirects` integration in `astro.config.mjs` writes
+  `dist/client/_redirects` (`/about /about/ 308`, one rule per emitted prerendered non-root page) in
+  `astro:build:done`. A new prerendered marketing page is covered automatically — don't add a
+  `public/_redirects` or a hand-kept list (the integration appends to one if present). It runs in the
+  static-assets layer, so `astro dev` doesn't show it; check the built Worker. Unknown paths have no
+  rule and stay true 404s. The rules are method-agnostic, so a POST to a slashless page also gets the
+  308. `scripts/test-slash-redirects.mjs` pins all of this.
 - `noindex, nofollow`: `404`, `thank-you`, `login`, `admin/setup`, and everything under
   `AdminLayout`/`DashboardLayout`. `/privacy-policy` is intentionally indexable. Every real page
   (except `404`) renders `<SiteHeader />` and `<SiteFooter />`.
