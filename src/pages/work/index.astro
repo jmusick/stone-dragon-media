@@ -1,0 +1,161 @@
+---
+import { Icon } from "astro-icon/components";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import PageHero from "../../components/PageHero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { workProjects, workSchema, workUrl } from "../../lib/work";
+
+export const prerender = true;
+---
+
+<BaseLayout
+  title="Web Design Portfolio | Stone Dragon Media"
+  description="Explore Stone Dragon Media’s web design portfolio, including Firelands Current, our digital newspaper, artist and author websites, and Tagstash."
+  canonical="https://stonedragonmedia.com/work/"
+  ogUrl="https://stonedragonmedia.com/work/"
+  breadcrumb="Our Work"
+  ogImage="https://stonedragonmedia.com/our-work-header.webp"
+  ogImageAlt="Stone Dragon Media portfolio — web design and development work"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Web Design Portfolio",
+      "url": "https://stonedragonmedia.com/work/",
+      "hasPart": workProjects.map((project) => ({
+        "@type": "WebPage",
+        "name": `${project.name} case study`,
+        "url": workUrl(project),
+      })),
+      "about": workProjects.map(workSchema)
+    })} />
+    <style>
+      .work-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      /* The screenshot runs edge to edge, so the card's chamfer cuts the image itself. */
+      .work-card {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        scroll-margin-top: 1.5rem;
+      }
+
+      .work-thumb {
+        display: block;
+        aspect-ratio: 1180 / 615;
+        overflow: hidden;
+        background: var(--slate);
+      }
+
+      .work-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        display: block;
+      }
+
+      .work-thumb:hover img {
+        filter: brightness(1.06);
+      }
+
+      .work-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 1.4rem 1.6rem 1.6rem;
+      }
+
+      .work-body h2 {
+        margin: 0 0 0.6rem;
+        font-size: clamp(1.3rem, 2vw, 1.6rem);
+      }
+
+      .work-body p {
+        margin: 0 0 0.9rem;
+      }
+
+      .work-body ul {
+        margin: 0 0 1.4rem;
+        padding-left: 1.1rem;
+        color: var(--ink-soft);
+      }
+
+      .work-body li {
+        margin: 0 0 0.35rem;
+        line-height: 1.5;
+      }
+
+      .work-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: auto;
+      }
+
+      @media (max-width: 760px) {
+        .work-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </Fragment>
+
+  <SiteHeader active="work" />
+
+  <main id="main-content">
+    <PageHero
+      image="/our-work-header.webp"
+      alt="Stone Dragon Media portfolio — web design and development work"
+      title="Our Work — Web Design Portfolio"
+      desc="See how our websites and applications help people find books and music, follow local news, and organize saved links."
+      crumbs={[{ name: "Our Work" }]}
+      position="center 35%"
+    />
+
+    <div class="page">
+      <div class="work-grid">
+        {workProjects.map((project) => (
+          <article class="card work-card" id={project.slug}>
+            {/* The heading link and button below go to the same page; the image link is a
+                duplicate for pointer users, so it's kept out of the tab order and the a11y tree. */}
+            <a class="work-thumb" href={`/work/${project.slug}/`} tabindex="-1" aria-hidden="true">
+              <img src={project.thumb} alt="" loading="lazy" width="1180" height="615" />
+            </a>
+            <div class="work-body">
+              <h2><a href={`/work/${project.slug}/`}>{project.name}</a></h2>
+              <p>{project.cardSummary}</p>
+              <ul>
+                {project.cardBullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+              <div class="work-actions">
+                <a class="button button-primary" href={`/work/${project.slug}/`} aria-label={`Read the ${project.name} case study`}>
+                  Read the Case Study
+                </a>
+                <a class="button button-secondary" href={project.url} target="_blank" rel="noreferrer noopener" aria-label={`Visit ${project.name} (opens in a new tab)`}>
+                  <Icon class="icon" name="lucide:external-link" aria-hidden="true" />
+                  Visit Site
+                </a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <section class="section">
+        <h2 class="section-title">Tell us about your project</h2>
+        <p>Have a website or application in mind? Tell us what you need help with and we&rsquo;ll follow up within one business day. Consultations are free.</p>
+        <a class="button button-primary" href="/contact/">Discuss Your Project</a>
+      </section>
+    </div>
+  </main>
+
+  <div class="footer-wrap">
+    <SiteFooter />
+  </div>
+</BaseLayout>

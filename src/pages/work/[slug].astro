@@ -1,0 +1,363 @@
+---
+import { Icon } from "astro-icon/components";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import PageHero from "../../components/PageHero.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { workProjects, workSchema, workServices, workUrl, type WorkProject } from "../../lib/work";
+
+export const prerender = true;
+
+// One template, one prerendered case study per project — the copy, screenshots, and JSON-LD all
+// come from src/lib/work.ts, which also feeds the /work grid.
+export function getStaticPaths() {
+  return workProjects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: WorkProject;
+}
+
+const { project } = Astro.props;
+const canonical = workUrl(project);
+const services = workServices(project);
+const liveHost = new URL(project.url).hostname;
+
+// The next three projects in portfolio order, wrapping around, so every case study links onward.
+const index = workProjects.indexOf(project);
+const more = [1, 2, 3].map((step) => workProjects[(index + step) % workProjects.length]);
+---
+
+<BaseLayout
+  title={`${project.title} | Stone Dragon Media`}
+  description={project.description}
+  canonical={canonical}
+  ogUrl={canonical}
+  ogType="article"
+  breadcrumb={project.name}
+  breadcrumbParent={{ name: "Our Work", item: "https://stonedragonmedia.com/work/" }}
+  ogImage={`https://stonedragonmedia.com${project.thumb}`}
+  ogImageAlt={project.thumbAlt}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": project.h1,
+      "description": project.description,
+      "url": canonical,
+      "primaryImageOfPage": `https://stonedragonmedia.com${project.thumb}`,
+      "isPartOf": { "@type": "CollectionPage", "name": "Web Design Portfolio", "url": "https://stonedragonmedia.com/work/" },
+      "about": workSchema(project),
+      "author": { "@type": "Organization", "name": "Stone Dragon Media", "url": "https://stonedragonmedia.com/" }
+    })} />
+    <style>
+      /* Lead screenshot beside the "at a glance" facts; they stack below 920px. */
+      .cs-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .cs-shot {
+        margin: 0;
+      }
+
+      .cs-shot img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1180 / 615;
+        object-fit: cover;
+        object-position: top;
+        background: var(--slate);
+        clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+      }
+
+      .cs-shot figcaption {
+        margin-top: 0.6rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--ink-soft);
+      }
+
+      .glance {
+        padding: 1.5rem 1.6rem 1.6rem;
+      }
+
+      .glance h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .glance dl {
+        margin: 0;
+        display: grid;
+        gap: 0.9rem;
+      }
+
+      .glance dt {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      .glance dd {
+        margin: 0.2rem 0 0;
+        line-height: 1.5;
+        color: var(--ink);
+      }
+
+      .glance ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin: 0.35rem 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .glance li {
+        padding: 0.15rem 0.55rem;
+        font-size: 0.9rem;
+        border: 1px solid var(--seam);
+        background: var(--stone);
+      }
+
+      .glance dd a {
+        color: var(--lake);
+        font-weight: 600;
+        text-underline-offset: 0.2em;
+      }
+
+      .cs-overview {
+        margin-top: clamp(2rem, 4vw, 3rem);
+      }
+
+      /* Story sections: heading in a narrow left rail, copy at reading width beside it. */
+      .cs-section {
+        display: grid;
+        grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+        gap: 0.5rem 2.5rem;
+        padding: clamp(1.6rem, 3vw, 2.2rem) 0;
+        border-top: 1px solid var(--seam);
+      }
+
+      .cs-section h2 {
+        margin: 0;
+        font-size: clamp(1.25rem, 2vw, 1.5rem);
+        color: var(--slate);
+      }
+
+      .cs-section-body {
+        max-width: 68ch;
+      }
+
+      .cs-section-body p {
+        margin: 0 0 1rem;
+      }
+
+      .cs-section-body p:last-child {
+        margin-bottom: 0;
+      }
+
+      .cs-section-body ul {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: var(--ink-soft);
+      }
+
+      .cs-section-body li {
+        margin: 0 0 0.45rem;
+        line-height: 1.55;
+      }
+
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+        gap: 1rem;
+      }
+
+      .services-grid .card p {
+        font-size: 0.92rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .services-grid .card h3 {
+        margin: 0.25rem 0 0;
+      }
+
+      .more-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      .more-all {
+        margin: 1.4rem 0 0;
+      }
+
+      @media (max-width: 920px) {
+        .cs-top {
+          grid-template-columns: 1fr;
+        }
+
+        .cs-section {
+          grid-template-columns: 1fr;
+        }
+
+        .more-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .gallery {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </Fragment>
+
+  <SiteHeader active="work" />
+
+  <main id="main-content">
+    <PageHero
+      image="/our-work-header.webp"
+      alt="Stone Dragon Media portfolio — web design and development work"
+      title={project.h1}
+      desc={project.heroDesc}
+      crumbs={[{ name: "Our Work", href: "/work/" }, { name: project.name }]}
+      position="center 35%"
+    >
+      <a class="button button-secondary" href={project.url} target="_blank" rel="noreferrer noopener" aria-label={`Visit ${project.name} (opens in a new tab)`}>
+        <Icon class="icon" name="lucide:external-link" aria-hidden="true" />
+        Visit {project.name}
+      </a>
+    </PageHero>
+
+    <div class="page">
+      <div class="cs-top">
+        <figure class="cs-shot">
+          <img src={project.thumb} alt={project.thumbAlt} width="1180" height="615" />
+          <figcaption>The {project.name} homepage.</figcaption>
+        </figure>
+
+        <aside class="card glance" aria-labelledby="glance-title">
+          <h2 id="glance-title">At a glance</h2>
+          <dl>
+            <div>
+              <dt>Project</dt>
+              <dd>{project.kind}</dd>
+            </div>
+            <div>
+              <dt>Our role</dt>
+              <dd>{project.role}</dd>
+            </div>
+            <div>
+              <dt>Built with</dt>
+              <dd>
+                <ul>
+                  {project.platform.map((tech) => <li>{tech}</li>)}
+                </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>Live site</dt>
+              <dd>
+                <a href={project.url} target="_blank" rel="noreferrer noopener">
+                  {liveHost}<span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+
+      <p class="lead cs-overview">{project.overview}</p>
+
+      {project.sections.map((section) => (
+        <section class="cs-section">
+          <h2>{section.heading}</h2>
+          <div class="cs-section-body">
+            {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+            {section.bullets && (
+              <ul>
+                {section.bullets.map((bullet) => <li>{bullet}</li>)}
+              </ul>
+            )}
+          </div>
+        </section>
+      ))}
+
+      {project.gallery.length > 0 && (
+        <section class="section">
+          <h2 class="section-title">Inside the site</h2>
+          <div class="gallery">
+            {project.gallery.map((shot) => (
+              <figure class="cs-shot">
+                <img src={shot.src} alt={shot.alt} loading="lazy" width="1180" height="615" />
+                <figcaption>{shot.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section class="section">
+        <h2 class="section-title">Services on this project</h2>
+        <div class="services-grid">
+          {services.map((service) => (
+            <article class="card">
+              <p>{service.category}</p>
+              <h3><a href={service.href}>{service.name}</a></h3>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">More case studies</h2>
+        <div class="more-grid">
+          {more.map((other) => (
+            <a class="shot" href={`/work/${other.slug}/`}>
+              <img src={other.thumb} alt="" loading="lazy" width="1180" height="615" />
+              <span class="shot-name">{other.name}</span>
+              <span class="shot-desc">{other.kind}</span>
+            </a>
+          ))}
+        </div>
+        <p class="more-all">See every project on our <a href="/work/">work page</a>.</p>
+      </section>
+    </div>
+
+    <section class="band cta-band">
+      <div class="band-inner">
+        <h2>Tell us about your project</h2>
+        <p>Share what you need help with, your timeline, and any questions. We&rsquo;ll follow up within one business day. Your consultation is free, with no obligation.</p>
+        <a class="button button-primary" href="/contact/">
+          <Icon class="icon" name="lucide:send" aria-hidden="true" />
+          Discuss Your Project
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-wrap">
+    <SiteFooter />
+  </div>
+</BaseLayout>

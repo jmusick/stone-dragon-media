@@ -219,6 +219,16 @@ body {
 	z-index: 1;
 }
 
+/* A button inside a card keeps its own inline icon, not the watermark above. */
+.card .button .icon {
+	position: static;
+	width: 1rem;
+	height: 1rem;
+	font-size: inherit;
+	color: currentColor;
+	opacity: 1;
+}
+
 .card-link {
 	display: inline-block;
 	margin-top: 0.9rem;

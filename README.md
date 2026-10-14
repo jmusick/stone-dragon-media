@@ -10,7 +10,7 @@ This repository powers the public-facing Stone Dragon Media site at [stonedragon
 - About page
 - Services hub with four category subpages (design & development, marketing & analytics, hosting & security, branding & consulting), plus a "How Much Does It Cost?" pricing-philosophy section
 - Products page (Firelands Current, our owned and operated digital newspaper, Tagstash, and an Upcoming Products section for Chomp Chomp Panic!, our kaiju game in development)
-- Our Work portfolio page (Firelands Current, JD Musick, Simon Rook, Dorian Black, Pneumaris, Tagstash)
+- Our Work portfolio page (Firelands Current, JD Musick, Simon Rook, Dorian Black, Pneumaris, Tagstash), with a case-study page for each project
 - Contact form with hCaptcha and Web3Forms submission
 - Privacy policy
 - Auto-generated sitemap
@@ -69,7 +69,8 @@ User-chosen passwords use one server policy (`src/lib/password-policy.ts`): 15�
 | `/services/hosting-security` | Hosting & Infrastructure + Security & Maintenance |
 | `/services/branding-consulting` | Branding & Design + Consulting & Strategy |
 | `/products` | Products |
-| `/work` | Our Work |
+| `/work` | Our Work — portfolio grid |
+| `/work/<slug>` | One case study per project (`firelands-current`, `jd-musick`, `simon-rook`, `dorian-black`, `pneumaris`, `tagstash`) |
 | `/contact` | Contact |
 | `/thank-you` | Post-submission confirmation, used for conversion tracking (noindex) |
 | `/privacy-policy` | Privacy Policy (indexed — in the sitemap) |
@@ -90,7 +91,7 @@ User-chosen passwords use one server policy (`src/lib/password-policy.ts`): 15�
 - **Global stylesheet** — `public/universal.css` (design tokens, typography, resets, and the shared marketing blocks: cards, bands, portfolio tiles). Every marketing hero is `src/components/PageHero.astro`, which also renders the page's `<h1>` and breadcrumb trail.
 - **Slash canonicals** — Marketing URLs are published with trailing slashes. The `permanentSlashRedirects` integration in `astro.config.mjs` writes `dist/client/_redirects` at build time with a 308 from each prerendered page's slashless form (`/about` -> `/about/`, query string preserved), replacing the Workers static-assets default 307. New prerendered pages are picked up automatically; unknown paths stay 404s. `node scripts/test-slash-redirects.mjs` verifies it against the built Worker.
 - **Sitemap** — Generated entirely by `@astrojs/sitemap` at `/sitemap-index.xml` / `/sitemap-0.xml`, with each page's `<lastmod>` taken from the last git commit that touched its source file. There is no hand-maintained sitemap route — a prior custom `sitemap.xml.ts` route was removed because it went stale (missing pages) and is intentionally not reintroduced. `robots.txt` and the footer/`<link rel="sitemap">` all point at `/sitemap-index.xml`.
-- **Local SEO / structured data** — Every marketing page carries JSON-LD. `src/pages/index.astro` has the `LocalBusiness`/`Organization` block (phone, city/state, `areaServed`); the other pages add `CollectionPage` (services hub, work), `ItemList`/`Service` (services category subpages), `CollectionPage` with `WebSite`/`SoftwareApplication` entries (products), `AboutPage`, and `ContactPage`. `BreadcrumbList` is emitted by `BaseLayout.astro` from its `breadcrumb` prop, with an optional `breadcrumbParent` for the three-level trail on service subpages. The business is home-based, so no street address is published anywhere on the site or in structured data — only city/state. `areaServed` and the visible "Areas We Serve" list both render from `src/lib/service-area.ts`, so they stay in sync; they cover the in-person ring only, and farther cities are described as remote.
+- **Local SEO / structured data** — Every marketing page carries JSON-LD. `src/pages/index.astro` has the `LocalBusiness`/`Organization` block (phone, city/state, `areaServed`); the other pages add `CollectionPage` (services hub, work), `WebPage` about each project's `WebSite`/`WebApplication` (work case studies), `ItemList`/`Service` (services category subpages), `CollectionPage` with `WebSite`/`SoftwareApplication` entries (products), `AboutPage`, and `ContactPage`. `BreadcrumbList` is emitted by `BaseLayout.astro` from its `breadcrumb` prop, with an optional `breadcrumbParent` for the three-level trail on service subpages and case studies. The business is home-based, so no street address is published anywhere on the site or in structured data — only city/state. `areaServed` and the visible "Areas We Serve" list both render from `src/lib/service-area.ts`, so they stay in sync; they cover the in-person ring only, and farther cities are described as remote.
 - **Images** — Hero/portfolio images are compressed WebP; the logo and favicon are palette-compressed PNG (to preserve transparency) via `sharp` (already a transitive dependency of Astro). Keep new image assets small — avoid committing multi-MB source screenshots/exports directly.
 - **Analytics** — `BaseLayout.astro` loads GA4 only on `stonedragonmedia.com`/`www.stonedragonmedia.com`, so local and Cloudflare preview traffic do not contaminate production reporting. The contact form emits a `generate_lead` event only after Web3Forms confirms a successful submission; form contents are never included.
 - **Contact form** — Posts to `https://api.web3forms.com/submit` via fetch; hCaptcha response is validated before submission. Keys (`access_key`, hCaptcha `sitekey`) are currently inlined in `contact.astro`.
@@ -129,7 +130,7 @@ npm run d1:migrate:local
 
 Provision a fresh random `ADMIN_SETUP_SECRET` of at least 32 characters in local `.dev.vars` or production Worker secrets, then set `ADMIN_SETUP_ENABLED="true"` (locally, a `[vars]` entry in `wrangler.toml`; in production, a Worker variable in the Cloudflare dashboard) and visit `/admin/setup` to create the owner's admin account. Enter the secret on the setup form. First-admin creation uses an atomic empty-users check. Unset the flag and remove the setup secret immediately after bootstrap. Set `ADMIN_SETUP_EXPIRES_AT` to an ISO timestamp no more than 15 minutes in the future; setup stays disabled without a live deadline.
 
-`npm run astro -- check` currently reports 0 errors, 0 warnings and 13 existing hints (2026-10-04). After a build, `node scripts/test-login-lockout.mjs`, `node scripts/test-impersonation.mjs`, `node scripts/test-client-archive.mjs`, `node scripts/test-error-responses.mjs` and `node scripts/test-slash-redirects.mjs` check the built local Worker on port 4331 with disposable synthetic D1 state. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
+`npm run astro -- check` currently reports 0 errors, 0 warnings and 14 existing hints (2026-10-13). After a build, `node scripts/test-login-lockout.mjs`, `node scripts/test-impersonation.mjs`, `node scripts/test-client-archive.mjs`, `node scripts/test-error-responses.mjs` and `node scripts/test-slash-redirects.mjs` check the built local Worker on port 4331 with disposable synthetic D1 state. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
 
 `node scripts/test-request-bounds.mjs` checks body and field rejection plus long Unicode passwords. Its oversized streaming case runs last because [Workers SDK issue 15709](https://github.com/cloudflare/workers-sdk/issues/15709) documents subsequent local proxy failures after body cancellation. The test verifies the application's 413 response; hosted connection reuse remains unverified.
 
@@ -178,11 +179,8 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── universal.css
 │   ├── robots.txt
 │   ├── _headers                  # security headers (/*) + Astro's /_astro/* cache rule
-│   ├── work/                     # portfolio thumbnails, 1180x615 .webp
-│   │   ├── dorianblack.webp
-│   │   ├── pneumaris.webp
-│   │   ├── simonrook.webp
-│   │   └── tagstash.webp
+│   ├── work/                     # portfolio screenshots, 1180x615 .webp: <project>.webp (grid thumbnail
+│   │                             #   + case-study lead) and <project>-<page>.webp (case-study gallery)
 │   └── (page hero images, .webp)
 ├── migrations/
 │   ├── 0001_initial.sql         # D1 schema: users, sessions, clients, projects, invoices, tickets, ticket_messages
@@ -209,12 +207,13 @@ npm run d1:migrate:remote   # apply to production D1
 │   │   ├── AdminLayout.astro    # admin shell (sidebar nav, shared table/form/badge styles)
 │   │   └── DashboardLayout.astro # client dashboard shell (+ impersonation banner)
 │   ├── lib/                     # D1 data access + auth (db, auth, http, setup, security-headers, users, clients, projects, tasks, notes, timeEntries, invoices, tickets)
-│   │                            # + marketing content: services.ts (catalogue), social.ts (profile URLs)
+│   │                            # + marketing content: services.ts (catalogue), work.ts (portfolio + case studies), social.ts (profile URLs)
 │   ├── middleware.ts            # resolves session/user/impersonated-client, forced-password-change redirect, SSR security headers
 │   ├── env.d.ts                 # App.Locals typing (UserRecord, SessionRecord, ClientRecord)
 │   └── pages/
-│       ├── index.astro / about.astro / contact.astro / products.astro / work.astro / privacy-policy.astro / 404.astro / thank-you.astro
+│       ├── index.astro / about.astro / contact.astro / products.astro / privacy-policy.astro / 404.astro / thank-you.astro
 │       ├── services/             # index.astro (hub) + [category].astro (four prerendered subpages)
+│       ├── work/                 # index.astro (portfolio grid) + [slug].astro (one prerendered case study per project)
 │       ├── login.astro
 │       ├── admin/                # setup.astro, index.astro, settings.astro, clients/, projects/ (board + task modal), billing/, tickets/
 │       ├── dashboard/             # index.astro, projects.astro, projects/[id].astro, billing.astro, settings.astro, tickets/

@@ -8,10 +8,10 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 // Sitemap <lastmod> = the last git commit touching a page's source file (plus the
-// services catalogue for /services/*), not the build time — a lastmod that changes
-// on every deploy is one crawlers learn to ignore. If git history isn't available
-// (no git, or a shallow clone where every file looks last-touched by one commit),
-// lastmod is left out rather than guessed.
+// services catalogue for /services/* and the portfolio data for /work/*), not the
+// build time — a lastmod that changes on every deploy is one crawlers learn to ignore.
+// If git history isn't available (no git, or a shallow clone where every file looks
+// last-touched by one commit), lastmod is left out rather than guessed.
 const gitHistory = (() => {
 	try {
 		return execFileSync('git', ['rev-parse', '--is-shallow-repository'], { encoding: 'utf8' }).trim() === 'false';
@@ -34,7 +34,9 @@ function lastCommitDate(files) {
 function sourceFilesFor(pathname) {
 	const route = pathname.replace(/^\/|\/$/g, '');
 	if (route === 'services') return ['src/pages/services/index.astro', 'src/lib/services.ts'];
+	if (route === 'work') return ['src/pages/work/index.astro', 'src/lib/work.ts'];
 	if (route.startsWith('services/')) return ['src/pages/services/[category].astro', 'src/lib/services.ts'];
+	if (route.startsWith('work/')) return ['src/pages/work/[slug].astro', 'src/lib/work.ts'];
 	const candidates = route === '' ? ['src/pages/index.astro'] : [`src/pages/${route}.astro`, `src/pages/${route}/index.astro`];
 	return candidates.filter((file) => existsSync(file));
 }

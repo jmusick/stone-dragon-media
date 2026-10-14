@@ -9,7 +9,7 @@ change something documented in both, change both.
 The website for Stone Dragon Media, LLC, a web design and digital strategy agency based in Sandusky,
 Ohio, live at [stonedragonmedia.com](https://stonedragonmedia.com). It is two things in one Astro app:
 
-1. **Marketing site** (`/`, `/about`, `/services`, `/services/*`, `/products`, `/work`, `/contact`,
+1. **Marketing site** (`/`, `/about`, `/services`, `/services/*`, `/products`, `/work`, `/work/*`, `/contact`,
    `/thank-you`, `/privacy-policy`, `/sitemap`, `/404`) — prerendered to static HTML at build time.
 2. **Client portal + admin** (`/login`, `/dashboard/*`, `/admin/*`, `/api/*`) — server-rendered per
    request, backed by Cloudflare D1.
@@ -49,7 +49,7 @@ npm run cf:types           # regenerate worker-configuration.d.ts
 
 Always run `npm run build` after non-trivial changes. For `/dashboard`, `/admin`, or auth work, also
 exercise the real flow via `npm run dev` — `astro check`/`build` won't catch a broken redirect or a
-missing D1 binding. As of 2026-10-04, `astro check` has 0 errors, 0 warnings and 13 existing hints.
+missing D1 binding. As of 2026-10-13, `astro check` has 0 errors, 0 warnings and 14 existing hints.
 The checked-in `scripts/test-*.mjs` regressions exercise the built Worker with disposable local D1
 state on port 4331; run `npm run build` first. They use Node 24's read-only SQLite inspection.
 
@@ -194,6 +194,15 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
   the two services in each, their copy, icons, and anchor ids. It feeds the `/services` hub, the
   `[category].astro` subpages, all of their JSON-LD, the header dropdown, and `/sitemap`. Anchor ids
   are linked from `/` and `/about` as `/services/<slug>/#<service-id>` — renaming means updating those.
+- **`src/lib/work.ts`** is the single source of truth for the portfolio: each project's `/work` grid
+  card, its `/work/<slug>/` case study (copy, "at a glance" facts, gallery, linked services), and the
+  JSON-LD on both (`CollectionPage` on `/work`; `WebPage` about the project's `WebSite`/`WebApplication`
+  on each case study), plus the `/sitemap` entries. Slugs double as `/work` card anchor ids and are
+  linked from `/`, `/services`, and `/products` — renaming means updating those. A project's
+  `services` reference `src/lib/services.ts` by category slug and service id; a stale reference fails
+  the build. Screenshots are `public/work/<project>.webp` (grid thumbnail, case-study lead, and
+  `og:image`) and `<project>-<page>.webp` (gallery), all 1180×615. Raw captures go in the project
+  library's `portfolio/<date>/`.
 - **`src/lib/service-area.ts`** is the single source of truth for service coverage: `inPersonCities`
   (the authorized in-person ring) feeds the homepage "Areas We Serve" list, the homepage
   `LocalBusiness`/`Organization` `areaServed`, and every `Service` `areaServed` on
@@ -208,7 +217,7 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
 - `/sitemap-index.xml` is generated entirely by `@astrojs/sitemap`, filtered in `astro.config.mjs`
   (excludes thank-you/login/dashboard/admin/api) — no hand-maintained duplicate. Its `serialize` stamps
   `<lastmod>` from the last git commit touching the page's source file (plus `services.ts` for
-  `/services/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
+  `/services/*` and `work.ts` for `/work/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
   `sourceFilesFor()`. A shallow clone skips `lastmod` rather than guess; the `prebuild` script (`scripts/unshallow.mjs`) unshallows Workers Builds' clone first so production still gets it. `/sitemap` is a
   separate human-facing HTML page with its own `pages` array; update it when a marketing page changes.
 - **Slashless marketing URLs get a permanent 308.** Workers static assets answer `/about` with a 307
@@ -238,9 +247,11 @@ slot is the hero's button row. The shared building blocks — `.page`, `.section
 screenshot tile), `.band`/`.cta-band` — live in `public/universal.css`; a page's own `<style>` only
 holds its grid/layout rules. Don't re-skin those blocks per page.
 
-The four service category pages are the one exception to "a page per file": a single
-`src/pages/services/[category].astro` with `getStaticPaths()` over `serviceCategories`, so that shape
-— CSS block included — is written once. Adding a category = one entry in `src/lib/services.ts`.
+The service category pages and the work case studies are the exceptions to "a page per file": a
+single `src/pages/services/[category].astro` with `getStaticPaths()` over `serviceCategories`, and a
+single `src/pages/work/[slug].astro` over `workProjects`, so each shape — CSS block included — is
+written once. Adding a category = one entry in `src/lib/services.ts`; adding a project = one entry in
+`src/lib/work.ts` plus its screenshots.
 
 **The footer must stay outside `<main>`** — `<footer>` only gets the `contentinfo` role when not
 nested in `main`/`article`/`aside`/`section`; `.page`/`.wrapper` carries no bottom padding so
@@ -311,6 +322,13 @@ thumbnails in `public/work/` are 1180×615 WebP, ~30–40 KB. New `<img>` tags n
 
 Pricing, phone number, portfolio claims, and business details come from the business owner, not
 assumptions. Base client-work claims on what actually shipped, not what a typical site would have.
+**Case studies (`src/lib/work.ts`)** are written from each project's own repo (README, data files,
+commit history — all under `C:\Users\JD\source\`), not from the live site's marketing copy. Per the
+owner (2026-10-13): describe the JD Musick, Simon Rook, Dorian Black, and Pneumaris work without
+claiming either way whether they are outside clients — no "the client asked" framing, no client
+quotes — and include no results, metrics, or testimonials until the owner supplies them. Don't
+describe features a repo marks as placeholder, unconfirmed, or not yet activated. Refer to the
+artists and authors by name, not by a guessed pronoun.
 **Service-area cities are an exception (2026-08-15)** — the owner authorized adding cities that help
 local SEO without asking, but the "Areas We Serve" list/`areaServed` JSON-LD covers only the in-person
 ring (~1 hour from Sandusky); farther cities go in the following sentence, named as remote. Don't move
