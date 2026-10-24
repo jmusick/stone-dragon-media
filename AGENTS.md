@@ -72,6 +72,28 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
 - Dashboard-only settings: plain env vars/secrets (e.g. `ADMIN_SETUP_ENABLED`, `NODE_VERSION` overrides `.node-version` for the
   build) and the `stonedragonmedia.com` custom domain.
 
+## Dependencies & repo security
+
+- **Dependabot** (`.github/dependabot.yml`): weekly npm PRs on Mondays — one grouped PR for
+  minor/patch bumps, one per major. Workers Builds builds every PR branch (`wrangler versions
+  upload`), so its check is the merge gate; merging deploys like any push to `master`.
+- **TypeScript majors are ignored** because `@astrojs/check` only accepts TypeScript `^5 || ^6`
+  (v2.26.2). Drop the `ignore` entry once it supports 7.
+- **`overrides.miniflare.undici` in `package.json` is temporary** (v2.26.4): Miniflare 5 pins
+  `undici` 7.29.1 (three advisories, fixed in 7.30.1). It's scoped to `miniflare` so Astro keeps
+  `undici` 8 — never make it a top-level override. Remove it once `npm ls undici` shows Miniflare
+  shipping >= 7.30.1 itself, then confirm `npm audit` stays clean.
+- **`allowScripts` must list every installed `workerd` version.** Two are usually installed (root, via
+  `@astrojs/cloudflare`'s vite plugin, and nested under `wrangler`). `npm install-scripts approve`
+  keeps only one version per package and drops the other as "stale", so add the second entry by
+  hand; `npm install-scripts ls` should report nothing unreviewed.
+- **`master` ruleset "Protect master"** blocks force-pushes and deletion — no PR or status-check
+  requirement, and no bypass list (admins included). Disable it temporarily under Settings → Rules
+  if a force-push is ever truly needed.
+- **GitHub security settings:** Dependabot alerts and security updates, CodeQL default setup
+  (JavaScript/TypeScript), secret scanning and push protection are on. Secret-scanning validity
+  checks and non-provider patterns stay off — they need a paid Secret Protection license.
+
 ## Portal / admin architecture
 
 - **Every new marketing page must be prerendered** (`export const prerender = true;`) or it runs
