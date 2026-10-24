@@ -1,7 +1,7 @@
 {
   "name": "sdm",
   "type": "module",
-  "version": "2.26.4",
+  "version": "2.26.5",
   "license": "SEE LICENSE IN LICENSE.md",
   "engines": {
     "node": ">=24.0.0"
@@ -40,8 +40,8 @@
     "esbuild@0.28.1": true,
     "sharp@0.34.5": true,
     "sharp@0.35.2": true,
-    "workerd@1.20261001.1": true,
+    "esbuild@0.28.2": true,
     "workerd@1.20261006.1": true,
-    "esbuild@0.28.2": true
+    "workerd@1.20261019.1": true
   }
 }
