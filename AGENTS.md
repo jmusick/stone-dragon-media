@@ -35,7 +35,7 @@ Don't commit review reports, scratch notes, or source artwork here. Write them t
 ## Commands
 
 ```bash
-npm install                # install deps (Node >= 22.19.0)
+npm install                # install deps (Node >= 24.0.0)
 npm run dev:astro          # astro dev in workerd, hot reload, local D1 — the fast loop
 npm run dev                # full Cloudflare runtime via wrangler dev (D1, cookies, auth)
                            #   builds first; NO hot reload — re-run after each change

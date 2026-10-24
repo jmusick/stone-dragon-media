@@ -105,7 +105,7 @@ Expensive auth work uses shared atomic D1 source/account budgets with 15-minute 
 
 ### Prerequisites
 
-- Node.js `>=22.19.0`
+- Node.js `>=24.0.0`
 - npm
 
 ### Install

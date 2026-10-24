@@ -1,10 +1,10 @@
 {
   "name": "sdm",
   "type": "module",
-  "version": "2.26.1",
+  "version": "2.26.2",
   "license": "SEE LICENSE IN LICENSE.md",
   "engines": {
-    "node": ">=22.19.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "dev:astro": "astro dev",
