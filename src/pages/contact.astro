@@ -356,14 +356,18 @@ export const prerender = true;
       submitButton.textContent = "Sending...";
       statusMessage.hidden = true;
 
+      let hcaptcha: { getResponse: () => string; reset: () => void } | undefined;
+      let tokenTaken = false;
+
       try {
-        const hcaptcha = (window as Window & { hcaptcha?: { getResponse: () => string; reset: () => void } }).hcaptcha;
+        hcaptcha = (window as Window & { hcaptcha?: { getResponse: () => string; reset: () => void } }).hcaptcha;
         const captchaResponse = hcaptcha?.getResponse();
         if (!captchaResponse) {
           setStatus("error", "Please complete the CAPTCHA.");
           return;
         }
 
+        tokenTaken = true;
         const formData = new FormData(form);
         const payload = {
           access_key: formData.get("access_key"),
@@ -412,10 +416,12 @@ export const prerender = true;
           window.location.href = "/thank-you/";
           return;
         } else {
-          setStatus("error", "We couldn’t send your message. Please try again, or call or text (567) 450-0960.");
+          hcaptcha?.reset();
+          setStatus("error", "We couldn’t send your message. Please complete the CAPTCHA again and resend, or call or text (567) 450-0960.");
         }
       } catch {
-        setStatus("error", "We couldn’t send your message. Please try again, or call or text (567) 450-0960.");
+        if (tokenTaken) hcaptcha?.reset();
+        setStatus("error", "We couldn’t send your message. Please complete the CAPTCHA again and resend, or call or text (567) 450-0960.");
       } finally {
         submitButton.disabled = false;
         submitButton.innerHTML = originalButtonHtml ?? "Send Message";
