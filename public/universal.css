@@ -672,11 +672,35 @@ body {
 	padding-top: 1.4rem;
 	border-top: 1px solid var(--seam);
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
 	color: var(--ink);
 	font-size: 0.93rem;
+}
+
+/* Footer nav takes its own full-width row above the copyright/social/links row. */
+.footer-nav {
+	flex-basis: 100%;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--seam);
+}
+
+.footer-nav ul {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0 1.75rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.footer-nav a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2rem;
+	white-space: nowrap;
 }
 
 .footer-copy {
@@ -890,6 +914,21 @@ body {
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
+	}
+
+	.footer-nav {
+		flex-basis: auto;
+		align-self: stretch;
+	}
+
+	.footer-nav ul {
+		justify-content: center;
+		gap: 0 1.5rem;
+	}
+
+	/* 44px rows once the links wrap onto several lines. */
+	.footer-nav a {
+		min-height: 44px;
 	}
 
 	.footer-right {
