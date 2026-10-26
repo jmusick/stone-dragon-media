@@ -1,6 +1,6 @@
 // Single source of truth for the portfolio: the /work grid, each /work/<slug>/ case study, their
-// JSON-LD, and the /sitemap entries all render from this array. Every claim here is about what
-// actually shipped — check the project's own repo before adding or changing one.
+// JSON-LD, /sitemap entries, and featured tiles on / and /services render from this catalogue.
+// Every claim here is about what actually shipped — check the project's own repo before changing one.
 
 import { serviceCategories } from "./services";
 
@@ -41,6 +41,8 @@ export interface WorkProject {
 
   // The /work grid card.
   cardSummary: string;
+  /** One-line description for featured portfolio tiles. */
+  shotDesc: string;
   cardBullets: string[];
 
   // The case study page.
@@ -71,6 +73,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: true,
     thumb: "/work/firelands-current.webp",
     thumbAlt: "Firelands Current homepage with its teal masthead and local news headlines",
+    shotDesc: "Our local newspaper with events, reader discussions, and newsroom tools.",
     cardSummary:
       "An independent digital newspaper for Sandusky, Ohio, and the Firelands region. We designed and built the site, and Stone Dragon Media, LLC owns and operates the publication, from its local coverage to its publishing platform.",
     cardBullets: [
@@ -159,6 +162,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: false,
     thumb: "/work/jdmusick.webp",
     thumbAlt: "JD Musick website showing The Road Still Knows album launch",
+    shotDesc: "Artist website with album details, streaming links, and booking contact.",
     cardSummary:
       "A website for blues and soul artist JD Musick and the debut record The Road Still Knows. Visitors can explore all eleven songs, find the album on streaming services, and get in touch about booking or licensing.",
     cardBullets: [
@@ -238,6 +242,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: false,
     thumb: "/work/simonrook.webp",
     thumbAlt: "Simon Rook author website",
+    shotDesc: "Author website with book details and purchase links.",
     cardSummary:
       "An author website for the launch of The Stoic Mind for Overthinkers. Readers can explore the book’s chapters and takeaways before following a purchase link to Amazon Kindle.",
     cardBullets: [
@@ -316,6 +321,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: false,
     thumb: "/work/dorianblack.webp",
     thumbAlt: "Dorian Black synth-pop artist website",
+    shotDesc: "Artist website with album details and streaming links.",
     cardSummary:
       "A neon-lit website for synth-pop artist Dorian Black and the debut album After Tonight. Listeners can explore the full record and find links to Spotify and Apple Music in one place.",
     cardBullets: [
@@ -395,6 +401,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: false,
     thumb: "/work/pneumaris.webp",
     thumbAlt: "Pneumaris website homepage with a hooded figure framed by a dark eclipse and the band name",
+    shotDesc: "Band website with music players and a contact form.",
     cardSummary:
       "A dark, atmospheric website for the metal project Pneumaris. Fans can listen through embedded music players, explore releases, and find the band’s music and social profiles.",
     cardBullets: [
@@ -479,6 +486,7 @@ export const workProjects: WorkProject[] = [
     ownedBySdm: true,
     thumb: "/work/tagstash.webp",
     thumbAlt: "Tagstash bookmarking tool",
+    shotDesc: "Our bookmarking application with paid plans and a Firefox extension.",
     cardSummary:
       "Our own bookmarking application for saving links and finding them again by tag or search. We built and operate the web app and its companion Firefox extension.",
     cardBullets: [
@@ -550,6 +558,13 @@ export const workProjects: WorkProject[] = [
     ],
   },
 ];
+
+/** Ordered projects shown in the Recent Work grids on / and /services. */
+export const featuredWork: WorkProject[] = ["simon-rook", "firelands-current", "pneumaris", "tagstash"].map((slug) => {
+  const project = workProjects.find((project) => project.slug === slug);
+  if (!project) throw new Error(`work.ts: featuredWork references unknown project ${slug}`);
+  return project;
+});
 
 export function workUrl(project: WorkProject): string {
   return `https://stonedragonmedia.com/work/${project.slug}/`;

@@ -219,8 +219,10 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
 - **`src/lib/work.ts`** is the single source of truth for the portfolio: each project's `/work` grid
   card, its `/work/<slug>/` case study (copy, "at a glance" facts, gallery, linked services), and the
   JSON-LD on both (`CollectionPage` on `/work`; `WebPage` about the project's `WebSite`/`WebApplication`
-  on each case study), plus the `/sitemap` entries. Slugs double as `/work` card anchor ids and are
-  linked from `/`, `/services`, and `/products` — renaming means updating those. A project's
+  on each case study), plus the `/sitemap` entries. Its ordered `featuredWork` list feeds the Recent
+  Work tiles on `/` and `/services/`, using each project's `shotDesc` and thumbnail metadata. Unknown
+  featured slugs fail the build. Slugs double as `/work` card anchor ids and are linked from `/`,
+  `/services`, and `/products` — renaming means updating those. A project's
   `services` reference `src/lib/services.ts` by category slug and service id; a stale reference fails
   the build. Screenshots are `public/work/<project>.webp` (grid thumbnail, case-study lead, and
   `og:image`) and `<project>-<page>.webp` (gallery), all 1180×615. Raw captures go in the project
@@ -239,7 +241,7 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
 - `/sitemap-index.xml` is generated entirely by `@astrojs/sitemap`, filtered in `astro.config.mjs`
   (excludes thank-you/login/dashboard/admin/api) — no hand-maintained duplicate. Its `serialize` stamps
   `<lastmod>` from the last git commit touching the page's source file (plus `services.ts` for
-  `/services/*` and `work.ts` for `/work/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
+  `/services/*` and `work.ts` for `/`, `/services/`, and `/work/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
   `sourceFilesFor()`. A shallow clone skips `lastmod` rather than guess; the `prebuild` script (`scripts/unshallow.mjs`) unshallows Workers Builds' clone first so production still gets it. `/sitemap` is a
   separate human-facing HTML page with its own `pages` array; update it when a marketing page changes.
 - **Slashless marketing URLs get a permanent 308.** Workers static assets answer `/about` with a 307

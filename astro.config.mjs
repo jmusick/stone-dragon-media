@@ -33,7 +33,8 @@ function lastCommitDate(files) {
 /** @param {string} pathname */
 function sourceFilesFor(pathname) {
 	const route = pathname.replace(/^\/|\/$/g, '');
-	if (route === 'services') return ['src/pages/services/index.astro', 'src/lib/services.ts'];
+	if (route === '') return ['src/pages/index.astro', 'src/lib/work.ts'];
+	if (route === 'services') return ['src/pages/services/index.astro', 'src/lib/services.ts', 'src/lib/work.ts'];
 	if (route === 'work') return ['src/pages/work/index.astro', 'src/lib/work.ts'];
 	if (route.startsWith('services/')) return ['src/pages/services/[category].astro', 'src/lib/services.ts'];
 	if (route.startsWith('work/')) return ['src/pages/work/[slug].astro', 'src/lib/work.ts'];
