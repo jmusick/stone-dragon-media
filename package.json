@@ -19,17 +19,17 @@
     "cf:types": "wrangler types"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.1",
+    "@astrojs/cloudflare": "^14.4.2",
     "@astrojs/sitemap": "^3.7.4",
     "@iconify-json/lucide": "^1.2.147",
     "@iconify-json/simple-icons": "^1.2.100",
-    "astro": "^7.3.5",
+    "astro": "^7.4.2",
     "astro-icon": "^1.1.5"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.11",
+    "@astrojs/check": "^0.9.12",
     "typescript": "^6.0.3",
-    "wrangler": "^4.151.3"
+    "wrangler": "^4.152.0"
   },
   "overrides": {
     "miniflare": {
