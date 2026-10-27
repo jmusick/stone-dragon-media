@@ -1,3 +1,9 @@
 # One imported public SecLists password, confirmed against the pinned source in
 # docs/password-blocklist.md. This exempts only its original commit/path/rule/line.
 7aec67c82d1ac6745f7ca36be4079c44e85bb38b:src/lib/data/common-passwords.json:generic-api-key:27
+
+# The hCaptcha site key in the contact form markup. Site keys are public by design (they ship in the
+# page HTML); the secret key is a Worker secret. These exempt only the commits where the line first appeared.
+93361720764f5570ceefdae0b68c5bbde16852d6:src/pages/contact.astro:generic-api-key:269
+2670d4318235a00cdc1e54470228b1f7d71b63d8:src/pages/contact.astro:generic-api-key:273
+3bfc2407214c53918d185e795ae06d22e1cff0e2:src/pages/contact.astro:generic-api-key:197
