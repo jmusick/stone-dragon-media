@@ -45,11 +45,12 @@ npm run deploy             # build + wrangler deploy (manual deploy; normally gi
 npm run d1:migrate:local   # apply migrations/*.sql to local D1
 npm run d1:migrate:remote  # apply migrations/*.sql to production D1
 npm run cf:types           # regenerate worker-configuration.d.ts
+npm run check              # astro check (typecheck; CI runs it after cf:types)
 ```
 
 Always run `npm run build` after non-trivial changes. For `/dashboard`, `/admin`, or auth work, also
 exercise the real flow via `npm run dev` — `astro check`/`build` won't catch a broken redirect or a
-missing D1 binding. As of 2026-10-13, `astro check` has 0 errors, 0 warnings and 14 existing hints.
+missing D1 binding. As of 2026-10-13, `astro check` has 0 errors, 0 warnings and 4 existing hints.
 The checked-in `scripts/test-*.mjs` regressions exercise the built Worker with disposable local D1
 state on port 4331; run `npm run build` first. They use Node 24's read-only SQLite inspection.
 
@@ -59,6 +60,13 @@ state on port 4331; run `npm run build` first. They use Node 24's read-only SQLi
 **`compressHTML: true` in `astro.config.mjs` is deliberate.** Astro 7's default (`'jsx'`) strips
 whitespace between inline elements, so `<strong>Total:</strong> <span>` would render as one word;
 v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than audit every page.
+
+## CI
+
+`.github/workflows/ci.yml` calls the shared `jmusick/ci` workflows (Baseline and Web app), pinned by commit
+SHA with the release tag as a comment; Dependabot's `github-actions` entry proposes new releases. Web app
+runs `npm run cf:types`, `npm run check` and `npm run build`. There are no tests yet, so the `scripts/test-*.mjs`
+regressions are not in CI. Require the **CI gate** job in branch protection, not the individual jobs.
 
 ## Deployment
 

@@ -16,7 +16,8 @@
     "astro": "astro",
     "d1:migrate:local": "wrangler d1 migrations apply DB --local",
     "d1:migrate:remote": "wrangler d1 migrations apply DB --remote",
-    "cf:types": "wrangler types"
+    "cf:types": "wrangler types",
+    "check": "astro check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",
