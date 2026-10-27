@@ -37,6 +37,12 @@ const currentPath = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${A
 			<a class="site-brand" href="/">
 				<img class="brand-logo" src="/logo-cropped.png" alt="Stone Dragon Media logo" loading="eager" decoding="async" />
 			</a>
+			{active !== "contact" && (
+				<a class="button button-secondary bar-cta" href="/contact/">
+					<Icon class="icon" name="lucide:send" aria-hidden="true" />
+					Start a Project
+				</a>
+			)}
 			<button
 				class="nav-toggle"
 				type="button"
@@ -80,7 +86,7 @@ const currentPath = Astro.url.pathname.endsWith("/") ? Astro.url.pathname : `${A
 				</a>
 			</nav>
 			{showCta && (
-				<a class="button button-secondary" href="/contact/">
+				<a class="button button-secondary panel-cta" href="/contact/">
 					<Icon class="icon" name="lucide:send" aria-hidden="true" />
 					Start a Project
 				</a>

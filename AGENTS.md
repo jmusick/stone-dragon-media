@@ -307,7 +307,7 @@ linked in `BaseLayout`; the portal layouts link Sora + Outfit themselves. `unive
 
 `SiteHeader`'s `active` prop drives nav highlighting — extend its type union for any new route. It
 opens with a utility bar (phone + city + `SocialLinks`) above the logo/nav row, ends with a
-visually-separated **Client Login** link, collapses to a hamburger at `max-width: 920px`, and renders
+visually-separated **Client Login** link, collapses to a hamburger at `max-width: 920px` (where a compact **Start a Project** button sits beside it on every page but `/contact/`, replacing the homepage panel's `showCta` copy, and `.utility-social` is hidden below 640px), and renders
 the page's first element — a skip-to-`#main-content` link, so every `<main>` must keep that id.
 Services is the only nav item with a submenu: `SiteHeader` handles desktop hover/focus and chevron
 click/tap through one `aria-expanded` state, which controls dropdown visibility and chevron rotation.
