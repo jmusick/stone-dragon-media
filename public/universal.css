@@ -432,6 +432,11 @@ body {
 	display: block;
 }
 
+/* Mobile-only project CTA beside the hamburger; hidden while the full nav is on screen. */
+.site-head-bar .bar-cta {
+	display: none;
+}
+
 .nav-toggle {
 	display: none;
 	align-items: center;
@@ -819,16 +824,38 @@ body {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 1rem;
+		gap: 0.6rem;
 		flex-wrap: nowrap;
 	}
 
+	/* The brand link flexes, so the logo fills whatever the CTA and hamburger leave, up to 190px. */
 	.brand-logo {
-		width: min(60%, 190px);
+		width: min(100%, 190px);
 	}
 
 	.nav-toggle {
 		display: inline-flex;
+		width: 2.75rem;
+		height: 2.75rem;
+	}
+
+	/* Compact CTA pushed against the hamburger; the logo shrinks first (.site-brand min-width: 0). */
+	.site-head-bar .bar-cta {
+		display: inline-flex;
+		margin-left: auto;
+		min-height: 2.75rem;
+		padding: 0.5rem 0.75rem;
+		font-size: 0.9rem;
+		white-space: nowrap;
+	}
+
+	.bar-cta .icon {
+		display: none;
+	}
+
+	/* The bar already carries the CTA, so the panel's copy (homepage) would be a duplicate. */
+	.panel-cta {
+		display: none;
 	}
 
 	.site-nav-panel {
@@ -934,6 +961,18 @@ body {
 	.footer-right {
 		justify-content: center;
 		flex-wrap: wrap;
+	}
+}
+
+/* Phones: phone + city fit on one line; the same social links are in the footer. */
+@media (max-width: 640px) {
+	.utility-social {
+		display: none;
+	}
+
+	/* Capped so the logo row, CTA and hamburger keep the whole header near 110px. */
+	.brand-logo {
+		width: min(100%, 135px);
 	}
 }
 
