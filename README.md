@@ -27,7 +27,7 @@ This repository powers the public-facing Stone Dragon Media site at [stonedragon
 | Analytics | Google Analytics 4 (GA4) — `G-GBG97CSL2Z` via gtag.js |
 | Contact form | Web3Forms API |
 | CAPTCHA | hCaptcha |
-| Hosting | Cloudflare Worker `stone-dragon-media` with static assets (via `@astrojs/cloudflare`), git-integrated through Workers Builds — pushing to `master` deploys to production |
+| Hosting | Cloudflare Worker `stone-dragon-media` with static assets (via `@astrojs/cloudflare`), git-integrated through Workers Builds — pushing to `main` deploys to production |
 | Database | Cloudflare D1 (`sdm-db`), binding `DB` — client/project/task/note/time-entry/invoice/ticket data |
 | Auth | Cookie-based sessions (`sdm_session`), PBKDF2 password hashing via Web Crypto — no external auth provider. Session tokens are stored in D1 as SHA-256 hashes, login has an 8-attempt / 15-min account lockout (every failed sign-in is logged to Workers Logs), and temp passwords force a change on first login |
 | Security headers | `public/_headers` (`/*` rule: CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Cross-Origin-Opener-Policy`, `Permissions-Policy`) for prerendered pages; `src/lib/security-headers.ts` applies the same set to portal SSR responses via middleware |
@@ -134,7 +134,7 @@ npm run d1:migrate:local
 
 Provision a fresh random `ADMIN_SETUP_SECRET` of at least 32 characters in local `.dev.vars` or production Worker secrets, then set `ADMIN_SETUP_ENABLED="true"` (locally, a `[vars]` entry in `wrangler.toml`; in production, a Worker variable in the Cloudflare dashboard) and visit `/admin/setup` to create the owner's admin account. Enter the secret on the setup form. First-admin creation uses an atomic empty-users check. Unset the flag and remove the setup secret immediately after bootstrap. Set `ADMIN_SETUP_EXPIRES_AT` to an ISO timestamp no more than 15 minutes in the future; setup stays disabled without a live deadline.
 
-`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-11-06). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `master`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check` and `npm run build` on Node from `.node-version`. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current. After a build, each `node scripts/test-*.mjs` regression checks the built local Worker on port 4331 with disposable synthetic D1 state (`test-runtime.mjs` is their shared harness, not a test). The exception is `test-session-credential-race.mjs`, which runs the auth modules against in-memory SQLite and needs no build. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
+`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-11-06). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `main`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check` and `npm run build` on Node from `.node-version`. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current. After a build, each `node scripts/test-*.mjs` regression checks the built local Worker on port 4331 with disposable synthetic D1 state (`test-runtime.mjs` is their shared harness, not a test). The exception is `test-session-credential-race.mjs`, which runs the auth modules against in-memory SQLite and needs no build. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
 
 `node scripts/test-request-bounds.mjs` checks body and field rejection plus long Unicode passwords. Its oversized streaming case runs last because [Workers SDK issue 15709](https://github.com/cloudflare/workers-sdk/issues/15709) documents subsequent local proxy failures after body cancellation. The test verifies the application's 413 response; hosted connection reuse remains unverified.
 
@@ -154,7 +154,7 @@ Serves the built worker in workerd against local D1.
 
 ### Deploy
 
-Pushing to `master` in [jmusick/stone-dragon-media](https://github.com/jmusick/stone-dragon-media) deploys via Workers Builds. To deploy manually from a local checkout:
+Pushing to `main` in [jmusick/stone-dragon-media](https://github.com/jmusick/stone-dragon-media) deploys via Workers Builds. To deploy manually from a local checkout:
 
 ```bash
 npm run deploy

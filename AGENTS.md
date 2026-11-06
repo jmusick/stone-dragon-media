@@ -71,13 +71,13 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
 ## Deployment
 
 - Cloudflare **Worker** `stone-dragon-media` (Workers Builds), git-integrated with GitHub `jmusick/stone-dragon-media` — pushing
-  to `master` builds (`npm run build`) and deploys (`npx wrangler deploy`). Migrated from a Pages
+  to `main` builds (`npm run build`) and deploys (`npx wrangler deploy`). Migrated from a Pages
   project in v2.17.0; `@astrojs/cloudflare` v13+ doesn't support Pages for SSR.
 - **`wrangler.toml` is the source of truth for bindings and runtime config** (D1 `DB`, compatibility
   date/flags) — no dashboard step. `main` is `@astrojs/cloudflare/entrypoints/server`; `astro build`
   writes the real deploy config to `dist/server/wrangler.json` and points `.wrangler/deploy/config.json`
   at it, which is what `wrangler deploy`/`wrangler dev` pick up.
-- Dashboard-only settings: plain env vars/secrets (e.g. `ADMIN_SETUP_ENABLED`, `NODE_VERSION` overrides `.node-version` for the
+- Dashboard-only settings: the Workers Builds production branch (`main`; Settings → Build → Branch control), plain env vars/secrets (e.g. `ADMIN_SETUP_ENABLED`, `NODE_VERSION` overrides `.node-version` for the
   build) and the `stonedragonmedia.com` custom domain.
 
 ## Dependencies & repo security
@@ -85,7 +85,7 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
 - **Dependabot** (`.github/dependabot.yml`): weekly npm PRs on Mondays — one grouped PR for
   minor/patch bumps, one per major — plus one grouped GitHub Actions PR. Workers Builds builds every
   PR branch (`wrangler versions upload`); that check and the **CI gate** are the merge gates, and
-  merging deploys like any push to `master`.
+  merging deploys like any push to `main`.
 - **TypeScript majors are ignored** because `@astrojs/check` only accepts TypeScript `^5 || ^6`
   (v2.26.2). Drop the `ignore` entry once it supports 7.
 - **`overrides.miniflare.undici` in `package.json` is temporary** (v2.26.4): Miniflare 5 pins
@@ -96,7 +96,7 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   `@astrojs/cloudflare`'s vite plugin, and nested under `wrangler`). `npm install-scripts approve`
   keeps only one version per package and drops the other as "stale", so add the second entry by
   hand; `npm install-scripts ls` should report nothing unreviewed.
-- **`master` ruleset "Protect master"** blocks force-pushes and deletion — no PR or status-check
+- **`main` ruleset "Protect main"** blocks force-pushes and deletion — no PR or status-check
   requirement, and no bypass list (admins included). Disable it temporarily under Settings → Rules
   if a force-push is ever truly needed.
 - **GitHub security settings:** Dependabot alerts and security updates, CodeQL default setup
