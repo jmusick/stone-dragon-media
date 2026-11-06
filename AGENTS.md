@@ -50,7 +50,7 @@ npm run check              # astro check (typecheck; CI runs it after cf:types)
 
 Always run `npm run build` after non-trivial changes. For `/dashboard`, `/admin`, or auth work, also
 exercise the real flow via `npm run dev` — `astro check`/`build` won't catch a broken redirect or a
-missing D1 binding. As of 2026-10-13, `astro check` has 0 errors, 0 warnings and 4 existing hints.
+missing D1 binding. As of 2026-11-06, `astro check` has 0 errors, 0 warnings and 4 existing hints.
 The checked-in `scripts/test-*.mjs` regressions exercise the built Worker with disposable local D1
 state on port 4331; run `npm run build` first. They use Node 24's read-only SQLite inspection.
 
@@ -65,8 +65,8 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
 
 `.github/workflows/ci.yml` calls the shared `jmusick/ci` workflows (Baseline and Web app), pinned by commit
 SHA with the release tag as a comment; Dependabot's `github-actions` entry proposes new releases. Web app
-runs `npm run cf:types`, `npm run check` and `npm run build`. There are no tests yet, so the `scripts/test-*.mjs`
-regressions are not in CI. Require the **CI gate** job in branch protection, not the individual jobs.
+runs `npm run cf:types`, `npm run check` and `npm run build`. There's no `npm test` script, so the `scripts/test-*.mjs`
+regressions are not in CI; run them locally. Require the **CI gate** job in branch protection, not the individual jobs.
 
 ## Deployment
 
@@ -83,8 +83,9 @@ regressions are not in CI. Require the **CI gate** job in branch protection, not
 ## Dependencies & repo security
 
 - **Dependabot** (`.github/dependabot.yml`): weekly npm PRs on Mondays — one grouped PR for
-  minor/patch bumps, one per major. Workers Builds builds every PR branch (`wrangler versions
-  upload`), so its check is the merge gate; merging deploys like any push to `master`.
+  minor/patch bumps, one per major — plus one grouped GitHub Actions PR. Workers Builds builds every
+  PR branch (`wrangler versions upload`); that check and the **CI gate** are the merge gates, and
+  merging deploys like any push to `master`.
 - **TypeScript majors are ignored** because `@astrojs/check` only accepts TypeScript `^5 || ^6`
   (v2.26.2). Drop the `ignore` entry once it supports 7.
 - **`overrides.miniflare.undici` in `package.json` is temporary** (v2.26.4): Miniflare 5 pins
@@ -185,7 +186,7 @@ regressions are not in CI. Require the **CI gate** job in branch protection, not
 
 Generic Worker failures return controlled responses with security headers and private portal caching. Session-resolution failures clear all auth state and return 503. Operational diagnostics log only failure stage and status to the same three-day (Workers Free) log sink, without exception messages or submitted data.
 
-Expensive auth work uses shared atomic D1 source/account budgets with 15-minute windows: login 40/source and 16/email, reauthentication/reset 20/source and 5/actor, setup 10/source, client ticket writes 40/source and 20/account. Keys are SHA-256 digests; missing edge IP metadata shares a conservative bucket. Expired rows are removed on subsequent limiter activity; inactive rows and provider backups may persist. Every host running this Worker uses the same DB budgets; edge WAF/hostname behavior still requires production verification. Migration 0010 must be applied before deploying these changes.
+Expensive auth work uses shared atomic D1 source/account budgets with 15-minute windows: login 40/source and 16/email, reauthentication/reset 20/source and 5/actor, setup 10/source, client ticket writes 40/source and 20/account. Keys are SHA-256 digests; missing edge IP metadata shares a conservative bucket. Expired rows are removed on subsequent limiter activity; inactive rows and provider backups may persist. Every host running this Worker uses the same DB budgets; edge WAF/hostname behavior still requires production verification.
 
 ## Database migrations
 
@@ -194,9 +195,8 @@ d1:migrate:local` (`:remote` for production). `0001_initial` → `0010_auth_rate
 `0003` renamed `project_features` to `tasks` and added the notes/time tables, `0006` added the login
 lockout columns, `0007` added `must_change_password` + the `password_flash` table, and `0008` clears
 `sessions` (the id column changed from raw token to its SHA-256). `0009` adds temporary-credential
-expiry and expires legacy temporary accounts; `0010` adds shared auth-work budgets. Apply both
-before deploying v2.23.0. Rebuilds that change `CHECK`
-constraints or rename columns follow `PRAGMA foreign_keys=OFF` → create replacement → copy → drop →
+expiry and expires legacy temporary accounts; `0010` adds shared auth-work budgets. Rebuilds
+that change `CHECK` constraints or rename columns follow `PRAGMA foreign_keys=OFF` → create replacement → copy → drop →
 rename → reindex → `PRAGMA foreign_keys=ON`, per `0002`.
 
 **`PRAGMA foreign_keys=OFF` does not reliably survive to later statements in the same file** —

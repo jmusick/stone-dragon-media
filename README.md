@@ -46,7 +46,7 @@ A handful of clients log in at `/login` to see their own projects, invoices, and
 - **Account settings**: both roles manage their own name, email, and password at `/admin/settings` / `/dashboard/settings` (shared `SettingsForm.astro`). These are strictly self-service — the API routes always act on the logged-in user, never on a `userId` from form input. A password change (or an admin reset) signs out the account's other sessions.
 - **Client lifecycle**: clients can be **archived** (reversible — blocks login, keeps business data, atomically revokes sessions and unclaimed temporary credentials; reactivation requires a fresh login or, for temporary credentials, an admin password reset) or **deleted** (irreversible — permanently removes their login and cascades through all of their projects, invoices, tickets, and ticket messages via `ON DELETE CASCADE`). Deletion requires the admin to re-enter their own password.
 - **Filtering/sorting**: the admin Projects and Clients list pages support status/client filters and sortable columns via query params, following the same pattern (see either page for the template).
-- **Library code**: `src/lib/{db,auth,http,setup,security-headers,users,clients,projects,tasks,notes,timeEntries,invoices,tickets}.ts`. `src/middleware.ts` resolves the session/user/impersonated-client on every request, enforces the forced-password-change redirect, and applies the security headers to SSR responses. `src/lib/http.ts`'s `ensureRole`/`ensureClientContext` guards **return** a redirect `Response` rather than throwing one — Astro page frontmatter only short-circuits via `return <Response>`, a thrown Response is not caught by the renderer. Every call site does `if (result instanceof Response) return result;`.
+- **Library code**: `src/lib/{db,auth,http,setup,security-headers,request-body,mutation-validation,password-policy,rate-limit,announce,users,clients,projects,tasks,notes,timeEntries,invoices,tickets}.ts`. `src/middleware.ts` resolves the session/user/impersonated-client on every request, enforces the forced-password-change redirect, and applies the security headers to SSR responses. `src/lib/http.ts`'s `ensureRole`/`ensureClientContext` guards **return** a redirect `Response` rather than throwing one — Astro page frontmatter only short-circuits via `return <Response>`, a thrown Response is not caught by the renderer. Every call site does `if (result instanceof Response) return result;`.
 - **Not wired to a real billing/accounting system** — invoices are a simple manually-entered record (description, amount, status, dates) in D1, not synced from Stripe/QuickBooks/etc.
 
 Portal layouts use `body.portal`; shared reflow rules live in `public/universal.css`. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
@@ -74,6 +74,7 @@ User-chosen passwords use one server policy (`src/lib/password-policy.ts`): 15�
 | `/contact` | Contact |
 | `/thank-you` | Post-submission confirmation, used for conversion tracking (noindex) |
 | `/privacy-policy` | Privacy Policy (indexed — in the sitemap) |
+| `/sitemap` | Human-readable HTML sitemap, linked from the footer |
 | `/404` | Not Found (noindex) |
 | `/sitemap-index.xml` | Astro-generated sitemap (submitted to Search Console) |
 | `/robots.txt` | Crawl rules + sitemap reference |
@@ -100,7 +101,7 @@ User-chosen passwords use one server policy (`src/lib/password-policy.ts`): 15�
 
 Generic Worker failures return controlled responses with security headers and private portal caching. Session-resolution failures clear all auth state and return 503. Operational diagnostics log only failure stage and status to the same three-day (Workers Free) log sink, without exception messages or submitted data.
 
-Expensive auth work uses shared atomic D1 source/account budgets with 15-minute windows: login 40/source and 16/email, reauthentication/reset 20/source and 5/actor, setup 10/source, client ticket writes 40/source and 20/account. Keys are SHA-256 digests; missing edge IP metadata shares a conservative bucket. Expired rows are removed on subsequent limiter activity; inactive rows and provider backups may persist. Every host running this Worker uses the same DB budgets; edge WAF/hostname behavior still requires production verification. Migration 0010 must be applied before deploying these changes.
+Expensive auth work uses shared atomic D1 source/account budgets with 15-minute windows: login 40/source and 16/email, reauthentication/reset 20/source and 5/actor, setup 10/source, client ticket writes 40/source and 20/account. Keys are SHA-256 digests; missing edge IP metadata shares a conservative bucket. Expired rows are removed on subsequent limiter activity; inactive rows and provider backups may persist. Every host running this Worker uses the same DB budgets; edge WAF/hostname behavior still requires production verification.
 
 ## Development
 
@@ -117,6 +118,8 @@ npm install
 
 ### Run Dev Server
 
+For the fast loop, `npm run dev:astro` runs `astro dev` in workerd with hot reload and local D1.
+
 Run the full Cloudflare runtime (D1, cookies, everything) — builds first, then serves via `wrangler dev`; re-run after each change since it doesn't hot-reload:
 
 ```bash
@@ -131,7 +134,7 @@ npm run d1:migrate:local
 
 Provision a fresh random `ADMIN_SETUP_SECRET` of at least 32 characters in local `.dev.vars` or production Worker secrets, then set `ADMIN_SETUP_ENABLED="true"` (locally, a `[vars]` entry in `wrangler.toml`; in production, a Worker variable in the Cloudflare dashboard) and visit `/admin/setup` to create the owner's admin account. Enter the secret on the setup form. First-admin creation uses an atomic empty-users check. Unset the flag and remove the setup secret immediately after bootstrap. Set `ADMIN_SETUP_EXPIRES_AT` to an ISO timestamp no more than 15 minutes in the future; setup stays disabled without a live deadline.
 
-`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-10-27). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `master`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check` and `npm run build` on Node from `.node-version`. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current. After a build, `node scripts/test-login-lockout.mjs`, `node scripts/test-impersonation.mjs`, `node scripts/test-client-archive.mjs`, `node scripts/test-error-responses.mjs` and `node scripts/test-slash-redirects.mjs` check the built local Worker on port 4331 with disposable synthetic D1 state. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
+`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-11-06). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `master`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check` and `npm run build` on Node from `.node-version`. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current. After a build, each `node scripts/test-*.mjs` regression checks the built local Worker on port 4331 with disposable synthetic D1 state (`test-runtime.mjs` is their shared harness, not a test). The exception is `test-session-credential-race.mjs`, which runs the auth modules against in-memory SQLite and needs no build. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
 
 `node scripts/test-request-bounds.mjs` checks body and field rejection plus long Unicode passwords. Its oversized streaming case runs last because [Workers SDK issue 15709](https://github.com/cloudflare/workers-sdk/issues/15709) documents subsequent local proxy failures after body cancellation. The test verifies the application's 413 response; hosted connection reuse remains unverified.
 
@@ -174,14 +177,18 @@ npm run d1:migrate:remote   # apply to production D1
 
 ```text
 .
+├── .github/                     # CI workflow (shared jmusick/ci) + Dependabot config
+├── docs/
+│   └── password-blocklist.md     # provenance + license for the bundled password blocklist
 ├── public/
 │   ├── favicon.png
-│   ├── logo.png / logo-cropped.png
+│   ├── logo.png / logo-cropped.png / dashboard-logo.png
 │   ├── universal.css
 │   ├── robots.txt
 │   ├── _headers                  # security headers (/*) + Astro's /_astro/* cache rule
 │   ├── work/                     # portfolio screenshots, 1180x615 .webp: <project>.webp (grid thumbnail
 │   │                             #   + case-study lead) and <project>-<page>.webp (case-study gallery)
+│   ├── products/                 # game title artwork for /products
 │   └── (page hero images, .webp)
 ├── migrations/
 │   ├── 0001_initial.sql         # D1 schema: users, sessions, clients, projects, invoices, tickets, ticket_messages
@@ -191,12 +198,18 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── 0005_user_names.sql       # users.first_name / users.last_name
 │   ├── 0006_login_lockout.sql   # users.failed_attempts / locked_until
 │   ├── 0007_temp_password_flow.sql # password_flash table + users.must_change_password
-│   └── 0008_hash_session_tokens.sql # sessions.id now stores SHA-256 of the token (clears sessions)
+│   ├── 0008_hash_session_tokens.sql # sessions.id now stores SHA-256 of the token (clears sessions)
+│   ├── 0009_temp_password_expiry.sql # temporary-credential expiry (expires legacy temp accounts)
+│   └── 0010_auth_rate_limits.sql # shared auth-work rate-limit budgets
 ├── scripts/
 │   ├── seed-local.mjs           # generates local test-data SQL (not in package.json — pipe into wrangler d1 execute --local)
-│   └── seed-local.sql
+│   ├── seed-local.sql
+│   ├── unshallow.mjs            # prebuild: unshallows Workers Builds' clone so sitemap lastmod works
+│   ├── test-runtime.mjs         # shared harness: built Worker on port 4331 + disposable local D1
+│   └── test-*.mjs               # regression checks (see Development)
 ├── src/
 │   ├── components/
+│   │   ├── PageHero.astro       # every marketing hero: the page's <h1> + breadcrumb trail
 │   │   ├── SiteHeader.astro
 │   │   ├── SiteFooter.astro
 │   │   ├── SocialLinks.astro    # shared social icon row (header utility bar + footer)
@@ -208,11 +221,13 @@ npm run d1:migrate:remote   # apply to production D1
 │   │   ├── AdminLayout.astro    # admin shell (sidebar nav, shared table/form/badge styles)
 │   │   └── DashboardLayout.astro # client dashboard shell (+ impersonation banner)
 │   ├── lib/                     # D1 data access + auth (db, auth, http, setup, security-headers, users, clients, projects, tasks, notes, timeEntries, invoices, tickets)
-│   │                            # + marketing content: services.ts (catalogue), work.ts (portfolio + case studies), social.ts (profile URLs)
+│   │                            # + request handling: request-body, mutation-validation, password-policy, rate-limit, announce
+│   │                            # + marketing content: services.ts (catalogue), work.ts (portfolio + case studies), social.ts (profile URLs), service-area.ts
+│   │                            # + data/common-passwords.json (password blocklist, see docs/)
 │   ├── middleware.ts            # resolves session/user/impersonated-client, forced-password-change redirect, SSR security headers
 │   ├── env.d.ts                 # App.Locals typing (UserRecord, SessionRecord, ClientRecord)
 │   └── pages/
-│       ├── index.astro / about.astro / contact.astro / products.astro / privacy-policy.astro / 404.astro / thank-you.astro
+│       ├── index.astro / about.astro / contact.astro / products.astro / privacy-policy.astro / sitemap.astro / 404.astro / thank-you.astro
 │       ├── services/             # index.astro (hub) + [category].astro (four prerendered subpages)
 │       ├── work/                 # index.astro (portfolio grid) + [slug].astro (one prerendered case study per project)
 │       ├── login.astro
@@ -231,6 +246,7 @@ npm run d1:migrate:remote   # apply to production D1
 │           ├── invoices/ (save.ts, delete.ts)
 │           ├── tickets/ (create.ts, reply.ts, update-status.ts)
 │           └── admin/impersonate/ (start.ts, stop.ts)
+├── .node-version                  # Node version for CI and Workers Builds
 ├── astro.config.mjs
 ├── wrangler.toml                 # worker entry, D1 binding, assets config
 ├── worker-configuration.d.ts      # generated by `npm run cf:types`
