@@ -177,7 +177,7 @@ const siblings = serviceCategories.filter((other) => other.slug !== category.slu
       <div class="band-inner">
         <h2>Tell us about your project</h2>
         <p>Share what you need help with, your timeline, and any questions. We&rsquo;ll follow up within one business day. Your consultation is free, with no obligation.</p>
-        <a class="button button-primary" href="/contact/">
+        <a class="button button-primary" href={`/contact/?service=${category.slug}`}>
           <Icon class="icon" name="lucide:send" aria-hidden="true" />
           Discuss Your Project
         </a>

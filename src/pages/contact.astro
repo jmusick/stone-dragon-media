@@ -4,6 +4,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import PageHero from "../components/PageHero.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { serviceCategories } from "../lib/services";
 
 export const prerender = true;
 ---
@@ -248,8 +249,14 @@ export const prerender = true;
                 <input id="email" name="email" type="email" autocomplete="email" required />
               </div>
               <div class="field">
-                <label for="company">Company</label>
-                <input id="company" name="company" type="text" autocomplete="organization" />
+                <label for="service">What do you need help with?</label>
+                <select id="service" name="service">
+                  <option value="Not sure yet" selected>Not sure yet</option>
+                  {serviceCategories.map((category) => (
+                    <option value={category.name} data-slug={category.slug}>{category.name}</option>
+                  ))}
+                  <option value="Something else">Something else</option>
+                </select>
               </div>
               <div class="field">
                 <label for="timeline">Timeline</label>
@@ -259,6 +266,10 @@ export const prerender = true;
                   <option>1-3 months</option>
                   <option>Exploring options</option>
                 </select>
+              </div>
+              <div class="field">
+                <label for="company">Company</label>
+                <input id="company" name="company" type="text" autocomplete="organization" />
               </div>
               <div class="field full">
                 <label for="message">Project Details <span class="required-mark" aria-hidden="true">*</span></label>
@@ -350,6 +361,17 @@ export const prerender = true;
       throw new Error("Contact form elements are missing.");
     }
 
+    // /contact/ is prerendered, so ?service=<slug> from a service page is applied here. Only a slug that
+    // matches an existing option's data-slug selects anything; the raw parameter never touches the DOM.
+    const serviceSelect = document.getElementById("service") as HTMLSelectElement | null;
+    const requestedService = new URLSearchParams(location.search).get("service");
+    if (serviceSelect && requestedService) {
+      const match = Array.from(serviceSelect.options).find(
+        (option) => option.dataset.slug === requestedService,
+      );
+      if (match) serviceSelect.value = match.value;
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       submitButton.disabled = true;
@@ -374,6 +396,7 @@ export const prerender = true;
           name: formData.get("name"),
           email: formData.get("email"),
           company: formData.get("company"),
+          service: formData.get("service"),
           timeline: formData.get("timeline"),
           message: formData.get("message"),
           "h-captcha-response": captchaResponse,

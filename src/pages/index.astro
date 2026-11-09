@@ -4,6 +4,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import PageHero from "../components/PageHero.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { serviceCategories } from "../lib/services";
 import { socialProfileUrls } from "../lib/social";
 import { inPersonCities, inPersonAreaServed, remoteCoverage, joinList } from "../lib/service-area";
 import { featuredWork } from "../lib/work";
@@ -41,19 +42,21 @@ export const prerender = true;
       "sameAs": socialProfileUrls
     })} />
     <style>
-      /* 4 x 2 on wide screens, so all eight services read as one block. */
+      /* One card per category: four across on wide screens, 2 x 2 below 1100px, one column on phones. */
       .services {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 1rem;
       }
 
-      .services .card {
-        min-height: 12.5rem;
+      .services .card ul {
+        margin: 0.8rem 0 0;
+        padding-left: 1.1rem;
+        color: var(--ink-soft);
       }
 
-      .services .card p {
-        font-size: 0.97rem;
+      .services .card li {
+        margin: 0 0 0.25rem;
       }
 
       .services-more {
@@ -107,10 +110,6 @@ export const prerender = true;
         .services {
           grid-template-columns: 1fr;
         }
-
-        .services .card {
-          min-height: 0;
-        }
       }
     </style>
   </Fragment>
@@ -141,62 +140,18 @@ export const prerender = true;
       <section class="section" id="services">
         <h2 class="section-title">Our Web Design &amp; Digital Services</h2>
         <div class="services">
-          <article class="card">
-            <Icon class="icon" name="lucide:layout-template" aria-hidden="true" />
-            <h3><a href="/services/design-development/#custom-web-solutions">Custom Web Solutions</a></h3>
-            <p>
-              Custom websites, online stores, and landing pages that help visitors understand your business and take the next step.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:cpu" aria-hidden="true" />
-            <h3><a href="/services/design-development/#application-development">Custom Application Development</a></h3>
-            <p>
-              Give your team one place to manage daily work, share information with customers, and automate repeated tasks.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:megaphone" aria-hidden="true" />
-            <h3><a href="/services/marketing-analytics/#marketing">Marketing</a></h3>
-            <p>
-              Search, paid advertising, social media, email, and content strategies to help the right customers find your business.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:bar-chart-2" aria-hidden="true" />
-            <h3><a href="/services/marketing-analytics/#analytics-reporting">Analytics &amp; Reporting</a></h3>
-            <p>
-              Google Analytics setup, conversion tracking, and dashboards to help you understand which pages and campaigns bring inquiries.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:server" aria-hidden="true" />
-            <h3><a href="/services/hosting-security/#hosting-infrastructure">Hosting &amp; Infrastructure</a></h3>
-            <p>
-              Domain management, hosting setup, performance improvements, and backup planning to support your website.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:shield" aria-hidden="true" />
-            <h3><a href="/services/hosting-security/#security-maintenance">Security &amp; Maintenance</a></h3>
-            <p>
-              Updates, security checks, and uptime monitoring to help you keep your website maintained after launch.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:palette" aria-hidden="true" />
-            <h3><a href="/services/branding-consulting/#branding-design">Branding &amp; Design</a></h3>
-            <p>
-              Logos, brand guides, and print and digital assets to give your business a consistent visual identity.
-            </p>
-          </article>
-          <article class="card">
-            <Icon class="icon" name="lucide:compass" aria-hidden="true" />
-            <h3><a href="/services/branding-consulting/#consulting-strategy">Consulting &amp; Strategy</a></h3>
-            <p>
-              Choose platforms that fit your business, plan a migration, or work out what your next software project needs.
-            </p>
-          </article>
+          {serviceCategories.map((category) => (
+            <article class="card">
+              <Icon class="icon" name={category.icon} aria-hidden="true" />
+              <h3><a href={`/services/${category.slug}/`}>{category.name}</a></h3>
+              <p>{category.summary}</p>
+              <ul>
+                {category.services.map((service) => (
+                  <li><a href={`/services/${category.slug}/#${service.id}`}>{service.name}</a></li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
         <p class="services-more">
           See the full breakdown on our <a href="/services/">services page</a>, browse
