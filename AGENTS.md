@@ -373,7 +373,11 @@ Columbus/Akron/Canton/Lima back into the in-person list — removed for overclai
 Edit the city list only in `src/lib/service-area.ts`.
 
 Contact-form keys (Web3Forms `access_key`, hCaptcha `sitekey`) are inlined in `contact.astro` — don't
-copy them into docs or new files. `/privacy-policy` covers both the marketing form/analytics and
+copy them into docs or new files. The form's optional "What do you need help with?" select is
+generated from `src/lib/services.ts` (value = category name, `data-slug` = slug); each
+`/services/<category>/` CTA links to `/contact/?service=<slug>`, and a client script preselects only
+an exact `data-slug` match. The submit handler builds its payload field by field, so a new field
+must be added there too. `/privacy-policy` covers both the marketing form/analytics and
 client portal account data in D1 — if either half changes (new third-party service, new data
 collected, changed retention), update the policy and its effective date together.
 
