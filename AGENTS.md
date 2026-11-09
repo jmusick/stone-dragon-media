@@ -225,9 +225,10 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
 - **No FAQ section, deliberately** — a prior one duplicated content above it and was removed. If
   revisited, only answer things not covered elsewhere, and only with the Q&A visibly on the page.
 - **`src/lib/services.ts`** is the single source of truth for the service catalogue: four categories,
-  the two services in each, their copy, icons, and anchor ids. It feeds the `/services` hub, the
-  `[category].astro` subpages, all of their JSON-LD, the header dropdown, and `/sitemap`. Anchor ids
-  are linked from `/` and `/about` as `/services/<slug>/#<service-id>` — renaming means updating those.
+  the two services in each, their copy, icons, and anchor ids. It feeds the homepage `#services`
+  cards, the `/services` hub, the `[category].astro` subpages, all of their JSON-LD, the header
+  dropdown, and `/sitemap`. Anchor ids are linked as `/services/<slug>/#<service-id>` from `/`
+  (generated) and from `/about` (hand-written) — renaming means updating `/about`.
 - **`src/lib/work.ts`** is the single source of truth for the portfolio: each project's `/work` grid
   card, its `/work/<slug>/` case study (copy, "at a glance" facts, gallery, linked services), and the
   JSON-LD on both (`CollectionPage` on `/work`; `WebPage` about the project's `WebSite`/`WebApplication`
@@ -253,7 +254,7 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
 - `/sitemap-index.xml` is generated entirely by `@astrojs/sitemap`, filtered in `astro.config.mjs`
   (excludes thank-you/login/dashboard/admin/api) — no hand-maintained duplicate. Its `serialize` stamps
   `<lastmod>` from the last git commit touching the page's source file (plus `services.ts` for
-  `/services/*` and `work.ts` for `/`, `/services/`, and `/work/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
+  `/` and `/services/*`, and `work.ts` for `/`, `/services/`, and `/work/*`); a new marketing page outside `src/pages/<route>.astro` needs a case in
   `sourceFilesFor()`. A shallow clone skips `lastmod` rather than guess; the `prebuild` script (`scripts/unshallow.mjs`) unshallows Workers Builds' clone first so production still gets it. `/sitemap` is a
   separate human-facing HTML page with its own `pages` array; update it when a marketing page changes.
 - **Slashless marketing URLs get a permanent 308.** Workers static assets answer `/about` with a 307
