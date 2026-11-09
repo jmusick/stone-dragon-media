@@ -5,9 +5,9 @@ import { ensureRole } from "../../../lib/http";
 import { getProjectById } from "../../../lib/projects";
 import { getClientById } from "../../../lib/clients";
 import { listTasksByProject, TASK_LANES, type TaskLane, type TaskType } from "../../../lib/tasks";
-import { listNotes } from "../../../lib/notes";
+import { listNotes, listTaskNotesByProject, type NoteRecord } from "../../../lib/notes";
 import { listAdminUsers } from "../../../lib/users";
-import { listTimeEntriesByTask, getTaskTimeTotalMinutes } from "../../../lib/timeEntries";
+import { listTimeEntriesByProject, type TimeEntryRecord } from "../../../lib/timeEntries";
 
 export const prerender = false;
 
@@ -20,28 +20,30 @@ if (!project) {
   return Astro.redirect("/admin/projects");
 }
 
-const [client, tasks, notes, admins] = await Promise.all([
+// Notes/time entries for every task are loaded up front (rather than fetched when the modal
+// opens) so editing a task never needs a JSON API round trip — the modal just clones the
+// matching <template>. They come from one project-wide query each, grouped by task here, so the
+// page's D1 query count stays fixed however many tasks the project has (Workers Free caps D1 at
+// 50 queries per invocation). Revisit if a project ever has hundreds of tasks.
+const [client, tasks, notes, admins, projectTaskNotes, projectTimeEntries] = await Promise.all([
   project.clientId ? getClientById(Astro.locals, project.clientId) : Promise.resolve(null),
   listTasksByProject(Astro.locals, project.id),
   listNotes(Astro.locals, "project_notes", project.id),
   listAdminUsers(Astro.locals),
+  listTaskNotesByProject(Astro.locals, project.id),
+  listTimeEntriesByProject(Astro.locals, project.id),
 ]);
 
-// Notes/time entries for every task are loaded up front (rather than fetched when the modal
-// opens) so editing a task never needs a JSON API round trip — the modal just clones the
-// matching <template>. Fine at this app's scale; revisit if a project ever has hundreds of tasks.
-const taskDetails = new Map(
-  await Promise.all(
-    tasks.map(async (task) => {
-      const [taskNotes, timeEntries, totalMinutes] = await Promise.all([
-        listNotes(Astro.locals, "task_notes", task.id),
-        listTimeEntriesByTask(Astro.locals, task.id),
-        getTaskTimeTotalMinutes(Astro.locals, task.id),
-      ]);
-      return [task.id, { notes: taskNotes, timeEntries, totalMinutes }] as const;
-    })
-  )
+const taskDetails = new Map<string, { notes: NoteRecord[]; timeEntries: TimeEntryRecord[]; totalMinutes: number }>(
+  tasks.map((task) => [task.id, { notes: [], timeEntries: [], totalMinutes: 0 }])
 );
+for (const note of projectTaskNotes) taskDetails.get(note.parentId)?.notes.push(note);
+for (const entry of projectTimeEntries) {
+  const details = taskDetails.get(entry.taskId);
+  if (!details) continue;
+  details.timeEntries.push(entry);
+  details.totalMinutes += entry.minutes;
+}
 
 const toDateInput = (ms: number | null) => (ms ? new Date(ms).toISOString().slice(0, 10) : "");
 const formatDateTime = (ms: number) => new Date(ms).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });

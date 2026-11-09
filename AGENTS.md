@@ -164,7 +164,11 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   are `<section>`s with an `<h3>`, cards are `<li>`s in a `<ul>`, and each card link carries a
   visually hidden "in <lane>" label kept in sync on move. Task details/notes/time are edited in **one shared
   `<dialog>` modal**, not a separate page; notes/time are pre-rendered per-task into `<template>`
-  elements and cloned in on open. Writes stay plain POST + redirect back to `?openTask={id}`, which
+  elements and cloned in on open. They come from one project-wide query each
+  (`listTaskNotesByProject`, `listTimeEntriesByProject`), grouped by task in the frontmatter, so the
+  page's D1 query count stays fixed however many tasks there are — Workers Free caps D1 at 50
+  queries per invocation, so never add per-task queries here (`test-project-page-queries.mjs` seeds
+  25 tasks). Writes stay plain POST + redirect back to `?openTask={id}`, which
   reopens the modal on load. Time entries are add/delete-only, stored in minutes.
 - **Screen-reader announcements**: `AdminLayout`/`DashboardLayout` each render one visually hidden
   polite live region (`#portal-announcer`). Any change a page makes without a navigation must report
