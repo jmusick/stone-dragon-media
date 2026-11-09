@@ -2,6 +2,7 @@
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { serviceCategoryLinks } from "../lib/services";
 
 export const prerender = true;
 ---
@@ -39,6 +40,40 @@ export const prerender = true;
         margin-top: 1.3rem;
       }
 
+      .next-steps {
+        margin: 2.2rem auto 0;
+        padding: 0;
+        max-width: 42ch;
+        list-style: none;
+        text-align: left;
+      }
+
+      .next-steps > li {
+        padding: 0.85rem 0;
+        border-top: 1px solid var(--line);
+        line-height: 1.6;
+        color: var(--ink);
+      }
+
+      .next-steps a {
+        font-weight: 700;
+        color: var(--brand);
+      }
+
+      .next-steps .sub {
+        margin: 0.35rem 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem 1rem;
+        color: var(--ink-soft);
+      }
+
+      .next-steps .sub a {
+        font-weight: 400;
+      }
+
       .footer-wrap {
         max-width: 1280px;
         margin: 0 auto;
@@ -61,6 +96,21 @@ export const prerender = true;
     <div class="actions">
       <a class="button button-primary" href="/">Go to Homepage</a>
     </div>
+    <ul class="next-steps">
+      <li>
+        <a href="/services/">Services</a>
+        <ul class="sub">
+          {serviceCategoryLinks.map((link) => (
+            <li><a href={link.href}>{link.label}</a></li>
+          ))}
+        </ul>
+      </li>
+      <li><a href="/work/">Our Work</a></li>
+      <li>
+        <a href="/contact/">Contact</a>, or call or text
+        <a href="tel:+15674500960">(567) 450-0960</a>
+      </li>
+    </ul>
   </main>
 
   <div class="footer-wrap">
