@@ -69,6 +69,25 @@ export async function listNotes(locals: App.Locals, table: NoteTable, parentId: 
   return results.map(toNoteRecord);
 }
 
+// Every task note in a project in one query, so the project page's query count doesn't grow with
+// its task count (Workers Free caps D1 at 50 queries per invocation). Same order as listNotes.
+export async function listTaskNotesByProject(locals: App.Locals, projectId: string): Promise<NoteRecord[]> {
+  const db = ensureDB(locals);
+  const { results } = await db
+    .prepare(
+      `SELECT ${SELECT_COLUMNS("task_notes", "task_id")}
+       FROM task_notes
+       INNER JOIN tasks ON tasks.id = task_notes.task_id
+       INNER JOIN users ON users.id = task_notes.author_user_id
+       WHERE tasks.project_id = ?
+       ORDER BY task_notes.created_at ASC`
+    )
+    .bind(projectId)
+    .all<NoteRow>();
+
+  return results.map(toNoteRecord);
+}
+
 export async function getNoteById(locals: App.Locals, table: NoteTable, id: string): Promise<NoteRecord | null> {
   const db = ensureDB(locals);
   const column = parentColumn(table);
