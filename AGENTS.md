@@ -22,13 +22,16 @@ Astro 7, TypeScript, `output: 'server'` via `@astrojs/cloudflare` (v14). No UI f
 Only what builds, tests, deploys, or documents the code: `src/`, `public/`, `migrations/`, `scripts/`,
 config, generated types, `README.md`/`AGENTS.md`/`CLAUDE.md`/`LICENSE.md`, and `docs/` for notices
 that must ship with bundled data. Everything else goes in the local project library at
-`C:\Users\JD\Projects\stone-dragon-media`, not here:
+`C:\Users\JD\projects\stone-dragon-media`, not here. Name every file and folder there in
+kebab-case:
 
-- `Assets/` — original and large images, design files, marketing and social graphics. Only
+- `assets/` — original and large images, design files, marketing and social graphics. Only
   optimized production copies go in `public/` (see Images).
-- `Documents/Reviews/` — copy reviews, audits, and other write-ups, named `YYYY-MM-DD <Title>.md`.
+- `documents/reviews/` — copy reviews, audits, and other write-ups, named `YYYY-MM-DD-title.md`.
 - `portfolio/` — dated screenshots and review captures.
-- `Business Records/` — private legal and tax documents. Never copy their contents into this repo.
+- `business-records/` — private legal and tax documents. Never copy their contents into this repo.
+- `outreach/` — prospect notes, one file per business.
+- `website-backups/` — zipped copies of other client sites.
 
 Don't commit review reports, scratch notes, or source artwork here. Write them to the project library.
 
@@ -136,7 +139,7 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   production login), and the Free plan's 10 ms CPU budget leaves no headroom. Staying at 100k plus
   the online rate limits is a deliberate decision (2026-10-12, issue #4). The evaluated upgrade path,
   an AES-GCM pepper wrap of stored hashes and chained rounds on Workers Paid, is written up in the
-  project library's `Documents/Reviews/2026-10-12 Password Hash Hardening Options.md`. Revisit it
+  project library's `documents/reviews/2026-10-12-password-hash-hardening-options.md`. Revisit it
   if the plan changes.
   Login counts failures atomically (eight failures lock for 15 minutes); blocked requests do not extend the lock, expiry starts a fresh count, and a successful login cannot clear an active concurrent lock.
   Session issuance is bound to the credential that was verified: `createSession` takes the verified hash and its INSERT also checks active, unlocked and unexpired-temporary state, so a password change or reset between verify and insert yields no session. Self-service `updateUserPassword` is compare-and-swap on that hash and returns false (changing nothing) if an admin reset landed first. `scripts/test-session-credential-race.mjs` pins these interleavings.
@@ -168,7 +171,7 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   (`listTaskNotesByProject`, `listTimeEntriesByProject`), grouped by task in the frontmatter, so the
   page's D1 query count stays fixed however many tasks there are — Workers Free caps D1 at 50
   queries per invocation, so never add per-task queries here (`test-project-page-queries.mjs` seeds
-  25 tasks). Writes stay plain POST + redirect back to `?openTask={id}`, which
+  24 tasks). Writes stay plain POST + redirect back to `?openTask={id}`, which
   reopens the modal on load. Time entries are add/delete-only, stored in minutes.
 - **Screen-reader announcements**: `AdminLayout`/`DashboardLayout` each render one visually hidden
   polite live region (`#portal-announcer`). Any change a page makes without a navigation must report
@@ -266,8 +269,8 @@ Actively worked for local SEO, targeting "Sandusky Ohio web design" and the regi
   rule and stay true 404s. The rules are method-agnostic, so a POST to a slashless page also gets the
   308. `scripts/test-slash-redirects.mjs` pins all of this.
 - `noindex, nofollow`: `404`, `thank-you`, `login`, `admin/setup`, and everything under
-  `AdminLayout`/`DashboardLayout`. `/privacy-policy` is intentionally indexable. Every real page
-  (except `404`) renders `<SiteHeader />` and `<SiteFooter />`.
+  `AdminLayout`/`DashboardLayout`. `/privacy-policy` is intentionally indexable. Every real page,
+  `404` included, renders `<SiteHeader />` and `<SiteFooter />`.
 
 ## Page conventions
 
@@ -353,7 +356,7 @@ Compress/resize with `sharp` (transitive Astro dependency at `node_modules/sharp
 palette-compressed `.png` (lossy WebP blurs flat-color edges). Target well under 200 KB per hero image
 and 100 KB per logo/favicon — this site had a real page-speed problem from multi-MB PNGs. Portfolio
 thumbnails in `public/work/` are 1180×615 WebP, ~30–40 KB. New `<img>` tags need real descriptive
-`alt`. Originals and design files live in the project library's `Assets/`, not this repo.
+`alt`. Originals and design files live in the project library's `assets/`, not this repo.
 
 ## Business content — don't invent it
 
