@@ -2,7 +2,8 @@
 // Full-bleed image hero shared by every marketing page that has one. The page's H1 lives here, so a
 // page using PageHero must not render a second H1 in its body. Subpages pass `crumbs` for a visible
 // breadcrumb trail (Home is added automatically); the home page passes none. Anything in the default
-// slot (usually buttons) renders as the hero's action row.
+// slot (usually buttons) renders as the hero's action row. `tall` and `compact` change the hero's
+// height: `tall` is for the home page, `compact` for pages that lead with a form.
 interface Crumb {
 	name: string;
 	/** Omit on the last crumb — it's the current page. */
@@ -19,13 +20,15 @@ interface Props {
 	position?: string;
 	/** Taller variant for the home page. */
 	tall?: boolean;
+	/** Shorter variant with less padding, for pages that lead with a form (contact). Wins over `tall`. */
+	compact?: boolean;
 }
 
-const { image, alt, title, desc, crumbs = [], position = "center", tall = false } = Astro.props;
+const { image, alt, title, desc, crumbs = [], position = "center", tall = false, compact = false } = Astro.props;
 const hasActions = Astro.slots.has("default");
 ---
 
-<div class:list={["page-hero", { tall }]}>
+<div class:list={["page-hero", { tall, compact }]}>
 	<img class="page-hero-img" src={image} alt={alt} style={`object-position: ${position}`} loading="eager" fetchpriority="high" />
 	<div class="page-hero-inner">
 		{crumbs.length > 0 && (
@@ -65,6 +68,30 @@ const hasActions = Astro.slots.has("default");
 
 	.page-hero.tall {
 		min-height: clamp(460px, 56vw, 620px);
+	}
+
+	/* For pages that lead with a form: less height and padding, same cleaved bottom edge and overlay. */
+	.page-hero.compact {
+		min-height: clamp(220px, 24vw, 280px);
+	}
+
+	.page-hero.compact .page-hero-inner {
+		padding: 1.5rem var(--gutter) calc(1rem + var(--cleave));
+	}
+
+	.page-hero.compact .page-hero-crumbs ol {
+		margin-bottom: 0.7rem;
+	}
+
+	/* Wider measure and a slightly smaller title so the title and description take fewer lines. */
+	.page-hero.compact h1 {
+		max-width: none;
+		font-size: clamp(2rem, 3.4vw, 2.75rem);
+	}
+
+	.page-hero.compact .page-hero-desc {
+		max-width: 44rem;
+		margin-top: 0.8rem;
 	}
 
 	.page-hero-img {
@@ -220,6 +247,10 @@ const hasActions = Astro.slots.has("default");
 
 		.page-hero-inner {
 			padding-top: 2.5rem;
+		}
+
+		.page-hero.compact .page-hero-inner {
+			padding-top: 1.25rem;
 		}
 	}
 </style>

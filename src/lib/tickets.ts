@@ -1,7 +1,31 @@
 import { ensureDB } from "./db";
 
-export type TicketStatus = "open" | "in_progress" | "waiting_on_client" | "resolved" | "closed";
-export type TicketPriority = "low" | "normal" | "high";
+/** Ticket statuses, in the order the portal lists them. Must match the tickets CHECK constraint. */
+export const TICKET_STATUSES = ["open", "in_progress", "waiting_on_client", "resolved", "closed"] as const;
+export type TicketStatus = (typeof TICKET_STATUSES)[number];
+export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
+  open: "Open",
+  in_progress: "In Progress",
+  waiting_on_client: "Waiting on Client",
+  resolved: "Resolved",
+  closed: "Closed",
+};
+export const TICKET_STATUS_BADGES: Record<TicketStatus, string> = {
+  open: "badge-warning",
+  in_progress: "badge-warning",
+  waiting_on_client: "badge-neutral",
+  resolved: "badge-success",
+  closed: "badge-neutral",
+};
+
+/** Ticket priorities, lowest first. Must match the tickets CHECK constraint. */
+export const TICKET_PRIORITIES = ["low", "normal", "high"] as const;
+export type TicketPriority = (typeof TICKET_PRIORITIES)[number];
+export const TICKET_PRIORITY_LABELS: Record<TicketPriority, string> = {
+  low: "Low",
+  normal: "Normal",
+  high: "High",
+};
 
 export interface TicketRecord {
   id: string;

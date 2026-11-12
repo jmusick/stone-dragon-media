@@ -1,10 +1,9 @@
 import type { APIRoute } from "astro";
 import { readForm } from "../../../lib/request-body";
-import { createSession, verifyPassword, verifyPasswordDummy } from "../../../lib/auth";
+import { createSession, setSessionCookie, verifyPassword, verifyPasswordDummy } from "../../../lib/auth";
 import { ensureDB } from "../../../lib/db";
 import { getLoginLockout, recordFailedLogin, resetLoginLockout } from "../../../lib/users";
 import { assertSameOrigin } from "../../../lib/http";
-import { SESSION_COOKIE } from "../../../middleware";
 import { limitWork } from "../../../lib/rate-limit";
 
 export const prerender = false;
@@ -36,7 +35,7 @@ function logFailedLogin(
 }
 
 export const POST: APIRoute = async (context) => {
-  const { request, locals, cookies, url, redirect } = context;
+  const { request, locals, redirect } = context;
 
   const csrf = assertSameOrigin(context);
   if (csrf) return csrf;
@@ -90,13 +89,7 @@ export const POST: APIRoute = async (context) => {
 
   const session = await createSession(locals, user.id, user.password_hash);
   if (!session) return redirect("/login?error=invalid");
-  cookies.set(SESSION_COOKIE, session.token, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: url.protocol === "https:",
-    expires: new Date(session.expiresAt),
-  });
+  setSessionCookie(context, session);
 
   if (user.must_change_password === 1) {
     return redirect(user.role === "admin" ? "/admin/settings?mustchange=1" : "/dashboard/settings?mustchange=1");

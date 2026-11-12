@@ -1,6 +1,22 @@
 import { ensureDB } from "./db";
 
-export type InvoiceStatus = "draft" | "sent" | "paid" | "overdue" | "void";
+/** Invoice statuses, in the order the portal lists them. Must match the invoices CHECK constraint. */
+export const INVOICE_STATUSES = ["draft", "sent", "paid", "overdue", "void"] as const;
+export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
+export const INVOICE_STATUS_LABELS: Record<InvoiceStatus, string> = {
+  draft: "Draft",
+  sent: "Sent",
+  paid: "Paid",
+  overdue: "Overdue",
+  void: "Void",
+};
+export const INVOICE_STATUS_BADGES: Record<InvoiceStatus, string> = {
+  draft: "badge-neutral",
+  sent: "badge-warning",
+  paid: "badge-success",
+  overdue: "badge-danger",
+  void: "badge-neutral",
+};
 
 export interface InvoiceRecord {
   id: string;

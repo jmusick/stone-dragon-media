@@ -1,4 +1,8 @@
 import { ensureDB } from "./db";
+import { INVOICE_STATUSES } from "./invoices";
+import { PROJECT_STATUSES } from "./projects";
+import { TASK_PRIORITIES, TASK_TYPES } from "./tasks";
+import { TICKET_PRIORITIES, TICKET_STATUSES } from "./tickets";
 
 const fields: Record<string, string[]> = {
   "/api/auth/login": ["email", "password"],
@@ -30,13 +34,12 @@ const fields: Record<string, string[]> = {
 };
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (value: string): boolean => uuid.test(value);
-const priorities = ["low", "normal", "high"];
-const enums: Record<string, Record<string, string[]>> = {
-  "/api/projects/save": { status: ["planning", "in_progress", "review", "completed", "on_hold"] },
-  "/api/tasks/save": { type: ["story", "bug", "task", "chore"], priority: priorities },
-  "/api/tickets/create": { priority: priorities },
-  "/api/tickets/update-status": { status: ["open", "in_progress", "waiting_on_client", "resolved", "closed"] },
-  "/api/invoices/save": { status: ["draft", "sent", "paid", "overdue", "void"] },
+const enums: Record<string, Record<string, readonly string[]>> = {
+  "/api/projects/save": { status: PROJECT_STATUSES },
+  "/api/tasks/save": { type: TASK_TYPES, priority: TASK_PRIORITIES },
+  "/api/tickets/create": { priority: TICKET_PRIORITIES },
+  "/api/tickets/update-status": { status: TICKET_STATUSES },
+  "/api/invoices/save": { status: INVOICE_STATUSES },
   "/api/time-entries/save": { unit: ["hours", "minutes"] },
   "/api/clients/set-active": { isActive: ["0", "1"] },
 };

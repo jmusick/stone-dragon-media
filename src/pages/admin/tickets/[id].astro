@@ -1,7 +1,7 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
-import { getTicketById, listMessages } from "../../../lib/tickets";
+import { getTicketById, listMessages, TICKET_STATUSES, TICKET_STATUS_LABELS } from "../../../lib/tickets";
 import { getClientById } from "../../../lib/clients";
 
 export const prerender = false;
@@ -33,11 +33,9 @@ const formatDate = (ms: number) => new Date(ms).toLocaleString("en-US", { dateSt
     <input type="hidden" name="ticketId" value={ticket.id} />
     <label for="status" style="font-weight: 600; color: var(--brand-strong); font-size: 0.9rem;">Status</label>
     <select id="status" name="status" class="filter-select" style="width: auto;">
-      <option value="open" selected={ticket.status === "open"}>Open</option>
-      <option value="in_progress" selected={ticket.status === "in_progress"}>In Progress</option>
-      <option value="waiting_on_client" selected={ticket.status === "waiting_on_client"}>Waiting on Client</option>
-      <option value="resolved" selected={ticket.status === "resolved"}>Resolved</option>
-      <option value="closed" selected={ticket.status === "closed"}>Closed</option>
+      {TICKET_STATUSES.map((status) => (
+        <option value={status} selected={ticket.status === status}>{TICKET_STATUS_LABELS[status]}</option>
+      ))}
     </select>
     <button class="btn btn-primary" type="submit">Update</button>
   </form>
