@@ -1,12 +1,48 @@
 import { ensureDB } from "./db";
 import { getDisplayName } from "./users";
 
-export type TaskType = "story" | "bug" | "task" | "chore";
+/** Task types, in the order the task form lists them. Must match the `0004` CHECK constraint. */
+export const TASK_TYPES = ["story", "bug", "task", "chore"] as const;
+export type TaskType = (typeof TASK_TYPES)[number];
+export const TASK_TYPE_LABELS: Record<TaskType, string> = {
+  story: "Story",
+  bug: "Bug",
+  task: "Task",
+  chore: "Chore",
+};
+export const TASK_TYPE_BADGES: Record<TaskType, string> = {
+  story: "badge-neutral",
+  bug: "badge-danger",
+  task: "badge-warning",
+  chore: "badge-success",
+};
 
 /** The kanban lanes, in board order. Must match the `0004` CHECK constraint. */
 export const TASK_LANES = ["planning", "to_do", "in_progress", "qa", "done"] as const;
 export type TaskLane = (typeof TASK_LANES)[number];
-export type TaskPriority = "low" | "normal" | "high";
+export const TASK_LANE_LABELS: Record<TaskLane, string> = {
+  planning: "Planning",
+  to_do: "To Do",
+  in_progress: "In Progress",
+  qa: "QA",
+  done: "Done",
+};
+
+/** Task priorities, lowest first. Must match the `0004` CHECK constraint. */
+export const TASK_PRIORITIES = ["low", "normal", "high"] as const;
+export type TaskPriority = (typeof TASK_PRIORITIES)[number];
+export const TASK_PRIORITY_LABELS: Record<TaskPriority, string> = {
+  low: "Low",
+  normal: "Normal",
+  high: "High",
+};
+
+/** Groups tasks into every lane (empty lanes included), keeping each lane's input order. */
+export function groupTasksByLane<T extends { lane: TaskLane }>(tasks: readonly T[]): Record<TaskLane, T[]> {
+  const byLane = Object.fromEntries(TASK_LANES.map((lane) => [lane, [] as T[]])) as Record<TaskLane, T[]>;
+  for (const task of tasks) byLane[task.lane].push(task);
+  return byLane;
+}
 
 export interface TaskRecord {
   id: string;

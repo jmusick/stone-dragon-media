@@ -1,7 +1,7 @@
 ---
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
-import { getInvoiceById } from "../../../lib/invoices";
+import { getInvoiceById, INVOICE_STATUSES, INVOICE_STATUS_LABELS } from "../../../lib/invoices";
 import { getClientById } from "../../../lib/clients";
 
 export const prerender = false;
@@ -39,11 +39,9 @@ const errorMessage = errorParam === "invalid" ? "Description and amount are requ
         <div class="field">
           <label for="status">Status</label>
           <select id="status" name="status">
-            <option value="draft" selected={invoice.status === "draft"}>Draft</option>
-            <option value="sent" selected={invoice.status === "sent"}>Sent</option>
-            <option value="paid" selected={invoice.status === "paid"}>Paid</option>
-            <option value="overdue" selected={invoice.status === "overdue"}>Overdue</option>
-            <option value="void" selected={invoice.status === "void"}>Void</option>
+            {INVOICE_STATUSES.map((status) => (
+              <option value={status} selected={invoice.status === status}>{INVOICE_STATUS_LABELS[status]}</option>
+            ))}
           </select>
         </div>
         <div class="field">
