@@ -6,6 +6,7 @@ import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { SECURITY_HEADERS } from './src/lib/security-headers.ts';
 
 // Sitemap <lastmod> = the last git commit touching a page's source file (plus the
 // services catalogue for /services/* and the portfolio data for /work/*), not the
@@ -69,6 +70,26 @@ function permanentSlashRedirects() {
 	};
 }
 
+// Prerendered pages are served straight from Workers static assets, which never run the
+// middleware, so they get their security headers from `_headers`. Write the `/*` block from
+// SECURITY_HEADERS (the same object the middleware applies to SSR responses) so the CSP lives in
+// one place, ahead of whatever public/_headers still carries (the `/_astro/*` cache rule).
+/** @returns {import('astro').AstroIntegration} */
+function securityHeadersFile() {
+	return {
+		name: 'security-headers-file',
+		hooks: {
+			'astro:build:done': async ({ dir, logger }) => {
+				const block = ['/*', ...Object.entries(SECURITY_HEADERS).map(([name, value]) => `  ${name}: ${value}`)];
+				const target = new URL('_headers', dir);
+				const existing = existsSync(target) ? readFileSync(target, 'utf8').trim() : '';
+				writeFileSync(target, block.join('\r\n') + '\r\n' + (existing ? '\r\n' + existing + '\r\n' : ''));
+				logger.info(`Wrote ${Object.keys(SECURITY_HEADERS).length} security headers to _headers`);
+			},
+		},
+	};
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://stonedragonmedia.com',
@@ -96,6 +117,7 @@ export default defineConfig({
 	integrations: [
 		icon(),
 		permanentSlashRedirects(),
+		securityHeadersFile(),
 		sitemap({
 			filter: (page) =>
 				!page.includes("/thank-you") &&
