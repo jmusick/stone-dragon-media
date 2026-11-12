@@ -123,7 +123,8 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   (never reaching the Worker) get them from `dist/client/_headers`, whose `/*` block the
   `securityHeadersFile` integration in `astro.config.mjs` generates from the same object at build
   time. `public/_headers` holds only the `/_astro/*` cache rule — never hand-copy headers into it.
-  `scripts/test-security-headers-file.mjs` checks the built file against the module. Middleware also sets `Cache-Control: private, no-store` on every
+  `scripts/test-security-headers-file.mjs` checks the built file against the module. Middleware
+  also sets `Cache-Control: private, no-store` on every
   `/admin`, `/dashboard`, `/api/`, and `/login` response — portal pages must never be cached.
   CSP uses `'unsafe-inline'` for script/style (Astro inlines per-build-hashed scripts + component
   styles; a static `_headers` can't carry a nonce) and allow-lists Google Fonts, GA/gtag, hCaptcha,
