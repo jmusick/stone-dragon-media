@@ -1,7 +1,7 @@
 ---
 import DashboardLayout from "../../../layouts/DashboardLayout.astro";
 import { ensureClientContext } from "../../../lib/http";
-import { listTicketsByClient } from "../../../lib/tickets";
+import { listTicketsByClient, TICKET_STATUS_BADGES } from "../../../lib/tickets";
 
 export const prerender = false;
 
@@ -11,14 +11,6 @@ const client = clientResult;
 const isImpersonating = Boolean(Astro.locals.impersonatedClient);
 
 const tickets = await listTicketsByClient(Astro.locals, client.id);
-
-const statusBadge: Record<string, string> = {
-  open: "badge-warning",
-  in_progress: "badge-warning",
-  waiting_on_client: "badge-neutral",
-  resolved: "badge-success",
-  closed: "badge-neutral",
-};
 ---
 
 <DashboardLayout title="Tickets">
@@ -44,7 +36,7 @@ const statusBadge: Record<string, string> = {
           {tickets.map((ticket) => (
             <tr>
               <td><a href={`/dashboard/tickets/${ticket.id}`}>{ticket.subject}</a></td>
-              <td><span class={`badge ${statusBadge[ticket.status]}`}>{ticket.status.replace(/_/g, " ")}</span></td>
+              <td><span class={`badge ${TICKET_STATUS_BADGES[ticket.status]}`}>{ticket.status.replace(/_/g, " ")}</span></td>
             </tr>
           ))}
         </tbody>

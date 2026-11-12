@@ -2,9 +2,19 @@
 import { Icon } from "astro-icon/components";
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
-import { getProjectById } from "../../../lib/projects";
+import { getProjectById, PROJECT_STATUSES, PROJECT_STATUS_LABELS } from "../../../lib/projects";
 import { getClientById } from "../../../lib/clients";
-import { listTasksByProject, TASK_LANES, type TaskLane, type TaskType } from "../../../lib/tasks";
+import {
+  groupTasksByLane,
+  listTasksByProject,
+  TASK_LANES,
+  TASK_LANE_LABELS,
+  TASK_PRIORITIES,
+  TASK_PRIORITY_LABELS,
+  TASK_TYPES,
+  TASK_TYPE_BADGES,
+  TASK_TYPE_LABELS,
+} from "../../../lib/tasks";
 import { listNotes, listTaskNotesByProject, type NoteRecord } from "../../../lib/notes";
 import { listAdminUsers } from "../../../lib/users";
 import { listTimeEntriesByProject, type TimeEntryRecord } from "../../../lib/timeEntries";
@@ -61,23 +71,7 @@ const errorMessages: Record<string, string> = {
 };
 const errorMessage = errorParam ? (errorMessages[errorParam] ?? null) : null;
 
-const lanes = TASK_LANES;
-const laneLabel: Record<TaskLane, string> = {
-  planning: "Planning",
-  to_do: "To Do",
-  in_progress: "In Progress",
-  qa: "QA",
-  done: "Done",
-};
-const tasksByLane: Record<TaskLane, typeof tasks> = { planning: [], to_do: [], in_progress: [], qa: [], done: [] };
-for (const task of tasks) tasksByLane[task.lane].push(task);
-
-const taskTypeBadge: Record<TaskType, string> = {
-  story: "badge-neutral",
-  bug: "badge-danger",
-  task: "badge-warning",
-  chore: "badge-success",
-};
+const tasksByLane = groupTasksByLane(tasks);
 ---
 
 <AdminLayout title={project.name}>
@@ -102,11 +96,9 @@ const taskTypeBadge: Record<TaskType, string> = {
           <div class="field">
             <label for="status">Status</label>
             <select id="status" name="status">
-              <option value="planning" selected={project.status === "planning"}>Planning</option>
-              <option value="in_progress" selected={project.status === "in_progress"}>In Progress</option>
-              <option value="review" selected={project.status === "review"}>Review</option>
-              <option value="on_hold" selected={project.status === "on_hold"}>On Hold</option>
-              <option value="completed" selected={project.status === "completed"}>Completed</option>
+              {PROJECT_STATUSES.map((status) => (
+                <option value={status} selected={project.status === status}>{PROJECT_STATUS_LABELS[status]}</option>
+              ))}
             </select>
           </div>
           <div class="field">
@@ -196,10 +188,10 @@ const taskTypeBadge: Record<TaskType, string> = {
     </div>
     <div class="notice notice-error" data-board-error hidden></div>
     <div class="kanban" data-kanban>
-      {lanes.map((lane) => (
+      {TASK_LANES.map((lane) => (
         <section class="kanban-column" aria-labelledby={`lane-heading-${lane}`}>
           <h3 class="kanban-column-header" id={`lane-heading-${lane}`}>
-            {laneLabel[lane]}
+            {TASK_LANE_LABELS[lane]}
             <span class="kanban-count"><span data-lane-count>{tasksByLane[lane].length}</span><span class="visually-hidden"> tasks</span></span>
           </h3>
           <ul class="kanban-drop-zone" role="list" data-lane-dropzone={lane}>
@@ -216,19 +208,19 @@ const taskTypeBadge: Record<TaskType, string> = {
               >
                 {/* draggable=false so a drag started on the link moves the whole card, not a URL */}
                 <a class="kanban-card-link" href={`/admin/projects/${project.id}?openTask=${task.id}`} draggable="false">
-                  <span class={`badge ${taskTypeBadge[task.type]}`}>{task.type}</span>
+                  <span class={`badge ${TASK_TYPE_BADGES[task.type]}`}>{task.type}</span>
                   <span class="kanban-card-title">{task.title}</span>
                   <span class="kanban-card-footer">
                     <span class={`kanban-priority kanban-priority-${task.priority}`}>{task.priority}<span class="visually-hidden"> priority,</span></span>
                     <span class="kanban-assignee">{task.assignedToName ?? "Unassigned"}</span>
                   </span>
-                  <span class="visually-hidden" data-card-lane>, in {laneLabel[lane]}</span>
+                  <span class="visually-hidden" data-card-lane>, in {TASK_LANE_LABELS[lane]}</span>
                 </a>
                 {/* Keyboard/screen-reader equivalent of drag-and-drop (WCAG 2.1.1) — same endpoint. */}
                 <label class="visually-hidden" for={`lane-select-${task.id}`}>Lane for {task.title}</label>
                 <select class="kanban-lane-select" id={`lane-select-${task.id}`} data-lane-select>
-                  {lanes.map((option) => (
-                    <option value={option} selected={option === lane}>{laneLabel[option]}</option>
+                  {TASK_LANES.map((option) => (
+                    <option value={option} selected={option === lane}>{TASK_LANE_LABELS[option]}</option>
                   ))}
                 </select>
               </li>
@@ -262,18 +254,13 @@ const taskTypeBadge: Record<TaskType, string> = {
           <div class="field">
             <label for="task-modal-type">Type</label>
             <select id="task-modal-type" name="type">
-              <option value="story">Story</option>
-              <option value="bug">Bug</option>
-              <option value="task">Task</option>
-              <option value="chore">Chore</option>
+              {TASK_TYPES.map((type) => <option value={type}>{TASK_TYPE_LABELS[type]}</option>)}
             </select>
           </div>
           <div class="field">
             <label for="task-modal-priority">Priority</label>
             <select id="task-modal-priority" name="priority">
-              <option value="low">Low</option>
-              <option value="normal">Normal</option>
-              <option value="high">High</option>
+              {TASK_PRIORITIES.map((priority) => <option value={priority}>{TASK_PRIORITY_LABELS[priority]}</option>)}
             </select>
           </div>
           <div class="field">
