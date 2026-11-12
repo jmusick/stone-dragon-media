@@ -2,6 +2,7 @@
 import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
 import { listClients } from "../../../lib/clients";
+import { INVOICE_STATUSES, INVOICE_STATUS_LABELS } from "../../../lib/invoices";
 
 export const prerender = false;
 
@@ -38,11 +39,7 @@ const errorMessage = errorParam === "invalid" ? "A client, description, and amou
           <div class="field">
             <label for="status">Status</label>
             <select id="status" name="status">
-              <option value="draft">Draft</option>
-              <option value="sent">Sent</option>
-              <option value="paid">Paid</option>
-              <option value="overdue">Overdue</option>
-              <option value="void">Void</option>
+              {INVOICE_STATUSES.map((status) => <option value={status}>{INVOICE_STATUS_LABELS[status]}</option>)}
             </select>
           </div>
           <div class="field">

@@ -1,6 +1,22 @@
 import { ensureDB } from "./db";
 
-export type ProjectStatus = "planning" | "in_progress" | "review" | "completed" | "on_hold";
+/** Project statuses, in the order the portal lists them. Must match the projects CHECK constraint. */
+export const PROJECT_STATUSES = ["planning", "in_progress", "review", "on_hold", "completed"] as const;
+export type ProjectStatus = (typeof PROJECT_STATUSES)[number];
+export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
+  planning: "Planning",
+  in_progress: "In Progress",
+  review: "Review",
+  on_hold: "On Hold",
+  completed: "Completed",
+};
+export const PROJECT_STATUS_BADGES: Record<ProjectStatus, string> = {
+  planning: "badge-neutral",
+  in_progress: "badge-warning",
+  review: "badge-warning",
+  on_hold: "badge-danger",
+  completed: "badge-success",
+};
 
 export interface ProjectRecord {
   id: string;
