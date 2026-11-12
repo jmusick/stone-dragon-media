@@ -1,10 +1,11 @@
 /**
  * Security response headers.
  *
- * `public/_headers` carries the same set for the prerendered marketing pages
- * (served straight from Workers' static asset storage, which never hits the worker or
- * this middleware). Keep the two in sync — the CSP below is the source of
- * truth; `_headers` is a hand-copy of it.
+ * The prerendered marketing pages are served straight from Workers' static asset storage,
+ * which never hits the worker or this middleware, so they need a `_headers` file. That
+ * file's `/*` block is generated from SECURITY_HEADERS by the `securityHeadersFile`
+ * integration in astro.config.mjs (`astro:build:done`), so this module is the only place
+ * to edit a header or the CSP. `public/_headers` keeps only the `/_astro/*` cache rule.
  *
  * CSP allowances in use:
  *   - Google Fonts       — styles from fonts.googleapis.com, files from fonts.gstatic.com

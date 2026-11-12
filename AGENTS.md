@@ -117,11 +117,13 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   non-GET/HEAD request whose `Origin`/`Referer` isn't same-origin. It's folded into `requireUser`, so
   every guarded route has it; the unguarded auth/setup POST routes call it directly. A new mutating
   route that uses none of the guards must call it itself.
-- **Security response headers** live in two places kept in sync by hand: `public/_headers` (`/*`
-  rule) covers the prerendered marketing pages Workers serves straight from static assets (never
-  reaching the Worker); portal SSR responses get the same set from `src/lib/security-headers.ts`'s
-  `applySecurityHeaders`, called in `src/middleware.ts`. The TS module is the source of truth for the
-  CSP string — change both together. Middleware also sets `Cache-Control: private, no-store` on every
+- **Security response headers** are defined once, in `src/lib/security-headers.ts`'s
+  `SECURITY_HEADERS`. Portal SSR responses get them from `applySecurityHeaders`, called in
+  `src/middleware.ts`; the prerendered marketing pages Workers serves straight from static assets
+  (never reaching the Worker) get them from `dist/client/_headers`, whose `/*` block the
+  `securityHeadersFile` integration in `astro.config.mjs` generates from the same object at build
+  time. `public/_headers` holds only the `/_astro/*` cache rule — never hand-copy headers into it.
+  `scripts/test-security-headers-file.mjs` checks the built file against the module. Middleware also sets `Cache-Control: private, no-store` on every
   `/admin`, `/dashboard`, `/api/`, and `/login` response — portal pages must never be cached.
   CSP uses `'unsafe-inline'` for script/style (Astro inlines per-build-hashed scripts + component
   styles; a static `_headers` can't carry a nonce) and allow-lists Google Fonts, GA/gtag, hCaptcha,

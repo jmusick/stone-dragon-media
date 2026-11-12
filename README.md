@@ -30,7 +30,7 @@ This repository powers the public-facing Stone Dragon Media site at [stonedragon
 | Hosting | Cloudflare Worker `stone-dragon-media` with static assets (via `@astrojs/cloudflare`), git-integrated through Workers Builds — pushing to `main` deploys to production |
 | Database | Cloudflare D1 (`sdm-db`), binding `DB` — client/project/task/note/time-entry/invoice/ticket data |
 | Auth | Cookie-based sessions (`sdm_session`), PBKDF2 password hashing via Web Crypto — no external auth provider. Session tokens are stored in D1 as SHA-256 hashes, login has an 8-attempt / 15-min account lockout (every failed sign-in is logged to Workers Logs), and temp passwords force a change on first login |
-| Security headers | `public/_headers` (`/*` rule: CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Cross-Origin-Opener-Policy`, `Permissions-Policy`) for prerendered pages; `src/lib/security-headers.ts` applies the same set to portal SSR responses via middleware |
+| Security headers | `src/lib/security-headers.ts` (CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Cross-Origin-Opener-Policy`, `Permissions-Policy`) applied to portal SSR responses via middleware and written into the built `_headers` `/*` rule for prerendered pages |
 
 ## Client Dashboard & Admin Area
 
@@ -97,7 +97,7 @@ User-chosen passwords use one server policy (`src/lib/password-policy.ts`): 15�
 - **Images** — Hero/portfolio images are compressed WebP; the logo and favicon are palette-compressed PNG (to preserve transparency) via `sharp` (already a transitive dependency of Astro). Keep new image assets small — avoid committing multi-MB source screenshots/exports directly.
 - **Analytics** — `BaseLayout.astro` loads GA4 only on `stonedragonmedia.com`/`www.stonedragonmedia.com`, so local and Cloudflare preview traffic do not contaminate production reporting. The contact form emits a `generate_lead` event only after Web3Forms confirms a successful submission; form contents are never included.
 - **Contact form** — Posts to `https://api.web3forms.com/submit` via fetch; hCaptcha response is validated before submission. An optional service select is generated from `src/lib/services.ts`, and each service category page's CTA links to `/contact/?service=<slug>` to preselect it. Keys (`access_key`, hCaptcha `sitekey`) are currently inlined in `contact.astro`.
-- **Security headers** — `public/_headers` sets CSP, HSTS (2-year, preload), `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY`, `Cross-Origin-Opener-Policy`, and `Permissions-Policy` on the prerendered pages Cloudflare serves from static assets. Portal responses (`/admin`, `/dashboard`, `/api/`, `/login`) also get `Cache-Control: private, no-store`. Portal SSR responses get the same set from `src/lib/security-headers.ts` (`applySecurityHeaders`), called in middleware; the CSP string is kept in sync between the two by hand, with the TS module as the source of truth.
+- **Security headers** — the built `dist/client/_headers` sets CSP, HSTS (2-year, preload), `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options: DENY`, `Cross-Origin-Opener-Policy`, and `Permissions-Policy` on the prerendered pages Cloudflare serves from static assets. Portal responses (`/admin`, `/dashboard`, `/api/`, `/login`) also get `Cache-Control: private, no-store`. Portal SSR responses get the same set from `src/lib/security-headers.ts` (`applySecurityHeaders`), called in middleware; the same module generates the `/*` block of the built `_headers` at build time, so there is one copy to edit.
 
 Generic Worker failures return controlled responses with security headers and private portal caching. Session-resolution failures clear all auth state and return 503. Operational diagnostics log only failure stage and status to the same three-day (Workers Free) log sink, without exception messages or submitted data.
 
@@ -185,7 +185,7 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── logo.png / logo-cropped.png / dashboard-logo.png
 │   ├── universal.css
 │   ├── robots.txt
-│   ├── _headers                  # security headers (/*) + Astro's /_astro/* cache rule
+│   ├── _headers                  # /_astro/* cache rule (the /* security headers are generated at build)
 │   ├── work/                     # portfolio screenshots, 1180x615 .webp: <project>.webp (grid thumbnail
 │   │                             #   + case-study lead) and <project>-<page>.webp (case-study gallery)
 │   ├── products/                 # game title artwork for /products
