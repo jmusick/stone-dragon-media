@@ -85,7 +85,7 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
 
 ## Dependencies & repo security
 
-- **Dependabot** (`.github/dependabot.yml`): weekly npm PRs on Mondays — one grouped PR for
+- **Dependabot** (`.github/dependabot.yml`): monthly npm PRs on the 1st — one grouped PR for
   minor/patch bumps, one per major — plus one grouped GitHub Actions PR. Workers Builds builds every
   PR branch (`wrangler versions upload`); that check and the **CI gate** are the merge gates, and
   merging deploys like any push to `main`.
