@@ -1,14 +1,12 @@
 import { defineMiddleware } from "astro:middleware";
 import { env as workerEnv } from "cloudflare:workers";
-import { getSessionAndUserByToken } from "./lib/auth";
+import { clearSessionCookie, getSessionAndUserByToken, SESSION_COOKIE } from "./lib/auth";
 import { getClientById } from "./lib/clients";
 import { applySecurityHeaders } from "./lib/security-headers";
 import { assertSameOrigin } from "./lib/http";
 import { limitWork } from "./lib/rate-limit";
 import { validateMutationBody } from "./lib/request-body";
 import { validMutationFields, validAdminRelationships } from "./lib/mutation-validation";
-
-const SESSION_COOKIE = "sdm_session";
 
 // Everything the Worker renders under these prefixes is per-user (or an auth
 // flow), so no browser or shared cache may keep it — otherwise Back after
@@ -52,7 +50,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.locals.user = null;
       context.locals.session = null;
       context.locals.impersonatedClient = null;
-      context.cookies.delete(SESSION_COOKIE, { path: "/" });
+      clearSessionCookie(context);
       return unavailable(context.url.pathname, "session", 503);
     }
   }
@@ -120,5 +118,3 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return unavailable(path, "route");
   }
 });
-
-export { SESSION_COOKIE };

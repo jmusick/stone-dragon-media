@@ -1,17 +1,16 @@
 import type { APIRoute } from "astro";
 import { readForm } from "../../../lib/request-body";
-import { createSession, hashPassword } from "../../../lib/auth";
+import { createSession, hashPassword, setSessionCookie } from "../../../lib/auth";
 import { ensureDB } from "../../../lib/db";
 import { getUserCount } from "../../../lib/users";
 import { isSetupEnabled, verifySetupSecret } from "../../../lib/setup";
 import { assertSameOrigin } from "../../../lib/http";
-import { SESSION_COOKIE } from "../../../middleware";
 import { passwordError } from "../../../lib/password-policy";
 
 export const prerender = false;
 
 export const POST: APIRoute = async (context) => {
-  const { locals, cookies, url, redirect } = context;
+  const { locals, redirect } = context;
 
   const csrf = assertSameOrigin(context);
   if (csrf) return csrf;
@@ -53,13 +52,7 @@ export const POST: APIRoute = async (context) => {
 
   const session = await createSession(locals, userId, passwordHash);
   if (!session) return redirect("/login");
-  cookies.set(SESSION_COOKIE, session.token, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    secure: url.protocol === "https:",
-    expires: new Date(session.expiresAt),
-  });
+  setSessionCookie(context, session);
 
   return redirect("/admin");
 };

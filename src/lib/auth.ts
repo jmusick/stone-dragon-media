@@ -1,7 +1,10 @@
+import type { APIContext } from "astro";
 import { ensureDB } from "./db";
 
 const PASSWORD_ITERATIONS = 100_000;
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 14;
+
+export const SESSION_COOKIE = "sdm_session";
 
 function toBase64(bytes: Uint8Array): string {
   let binary = "";
@@ -124,6 +127,24 @@ export async function createSession(
 
   if (result.meta.changes !== 1) return null;
   return { token, expiresAt };
+}
+
+/** Sets the session cookie; `secure` follows the request protocol. */
+export function setSessionCookie(
+  context: Pick<APIContext, "cookies" | "url">,
+  session: { token: string; expiresAt: number }
+): void {
+  context.cookies.set(SESSION_COOKIE, session.token, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "lax",
+    secure: context.url.protocol === "https:",
+    expires: new Date(session.expiresAt),
+  });
+}
+
+export function clearSessionCookie(context: Pick<APIContext, "cookies">): void {
+  context.cookies.delete(SESSION_COOKIE, { path: "/" });
 }
 
 /** Takes the raw cookie token (as `logout` has it), hashes it, and deletes the row. */
