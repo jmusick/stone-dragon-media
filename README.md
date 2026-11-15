@@ -202,8 +202,7 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── 0009_temp_password_expiry.sql # temporary-credential expiry (expires legacy temp accounts)
 │   └── 0010_auth_rate_limits.sql # shared auth-work rate-limit budgets
 ├── scripts/
-│   ├── seed-local.mjs           # generates local test-data SQL (not in package.json — pipe into wrangler d1 execute --local)
-│   ├── seed-local.sql
+│   ├── seed-local.mjs           # generates local test-data SQL (not tracked; pipe into wrangler d1 execute --local)
 │   ├── unshallow.mjs            # prebuild: unshallows Workers Builds' clone so sitemap lastmod works
 │   ├── test-runtime.mjs         # shared harness: built Worker on port 4331 + disposable local D1
 │   └── test-*.mjs               # regression checks (see Development)

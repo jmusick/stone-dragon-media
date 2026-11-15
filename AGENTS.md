@@ -58,7 +58,9 @@ The checked-in `scripts/test-*.mjs` regressions exercise the built Worker with d
 state on port 4331; run `npm run build` first. They use Node 24's read-only SQLite inspection.
 
 `scripts/seed-local.mjs` generates local test-data SQL (real PBKDF2 hashes) and is **not** wired into
-`package.json` — pipe its output into `npx wrangler d1 execute sdm-db --local`. Local only.
+`package.json` — pipe its output into `npx wrangler d1 execute sdm-db --local`. Local only. The generated SQL is not tracked; generate it fresh.
+The local password is `test-password-123` for `admin@example.test`,
+`maya@riversideroasters.test`, and `owen@harborlightlegal.test`.
 
 **`compressHTML: true` in `astro.config.mjs` is deliberate.** Astro 7's default (`'jsx'`) strips
 whitespace between inline elements, so `<strong>Total:</strong> <span>` would render as one word;
