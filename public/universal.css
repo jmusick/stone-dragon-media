@@ -1,5 +1,5 @@
 /*
- * Fonts are linked per layout, not @imported here: BaseLayout loads Archivo for the marketing site,
+ * Fonts are linked per layout, not @imported here: BaseLayout loads Archivo + Schibsted Grotesk for the marketing site,
  * AdminLayout/DashboardLayout load Sora + Outfit for the portal. An @import in this file would add a
  * render-blocking request chain to every page for fonts half of them never use.
  */
@@ -27,6 +27,7 @@
 	--mist: #a9c1d4;
 
 	--font: "Archivo", system-ui, sans-serif;
+	--font-display: "Schibsted Grotesk", "Archivo", system-ui, sans-serif;
 	--gutter: clamp(1.1rem, 2.5vw, 2.4rem);
 	/* The facet: the logo's cut-stone edge, used as the corner chamfer on cards and the angled edge
 	   on heroes and bands. It is the site's one decorative device — keep it to those. */
@@ -98,13 +99,12 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* Headings use Archivo's expanded cut — wide, flat, carved-sign lettering. Body copy stays at
-   normal width. Pages set size and colour; the width lives here so it can't drift per page. */
+/* Headings are Schibsted Grotesk bold — a compact, sturdy newspaper grotesque over the Archivo
+   body. Pages set size and colour; the face lives here so it can't drift per page. */
 .site h1,
 .site h2,
 .site h3 {
-	font-family: var(--font);
-	font-stretch: 125%;
+	font-family: var(--font-display);
 	font-weight: 700;
 	letter-spacing: -0.015em;
 	line-height: 1.12;
@@ -174,7 +174,7 @@ body {
 }
 
 .card h3 {
-	font-size: 1.12rem;
+	font-size: 1.15rem;
 }
 
 .card p {

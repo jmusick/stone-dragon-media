@@ -312,8 +312,10 @@ The page background is a solid `--stone`; `--ink-soft` and `--lake` both clear 4
 band's top edge — is the site's one decorative device; keep it to those. Body copy links are styled by
 `.page p a`/`.page li a` (not `.button`/nav).
 
-**Fonts:** marketing pages use Archivo alone (headings at `font-stretch: 125%`, body at normal width),
-linked in `BaseLayout`; the portal layouts link Sora + Outfit themselves. `universal.css` has no
+**Fonts:** marketing headings (`h1`–`h3`) use Schibsted Grotesk bold (`--font-display`) and
+everything else uses Archivo at normal width (`--font`), both linked in `BaseLayout`
+and loaded with only the axes in use (Archivo `wdth` 87.5–100 for the breadcrumb, `wght` 400–700);
+the portal layouts link Sora + Outfit themselves. `universal.css` has no
 `@import`.
 
 `SiteHeader`'s `active` prop drives nav highlighting — extend its type union for any new route. It
