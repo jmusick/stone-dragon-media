@@ -171,7 +171,11 @@ runs `npm run cf:types`, `npm run check`, `npm run build`, then `npm test` throu
   `projects` → `tasks`/`project_notes` → `task_notes`/`time_entries`, plus `invoices`,
   `tickets`→`ticket_messages`), gated behind re-entering the admin's password. **Archiving**
   (`clients.isActive`) is the reversible alternative — prefer it unless told to delete permanently. Archiving atomically revokes sessions, clears password flashes and invalidates unclaimed temporary hashes; reactivation needs a fresh login (admin reset for invalidated temporary credentials). Session insertion checks active status to close an in-flight archive race.
-  Invoices are a manual D1 record (description, amount, status, dates) — nothing syncs from Stripe.
+  Invoices are a manual D1 record (description, amount, status, dates) — nothing syncs from Stripe. An
+  invoice may carry an optional `payment_url` (a Stripe Payment Link or hosted-invoice URL, https on
+  `buy`/`checkout`/`invoice.stripe.com` only, checked by `paymentUrl()` in `src/lib/mutation-validation.ts`);
+  `/dashboard/billing` shows it as a new-tab **Pay now** link only while the invoice is `sent` or `overdue`.
+  The admin still marks it paid by hand.
 - **Kanban task board** (`/admin/projects/[id].astro`): tasks have `type`, `priority`, optional
   `assignedToUserId` (admins only), and a `lane` (planning/to_do/in_progress/qa/done, starting in
   `planning`). Drag-and-drop goes through `/api/tasks/update-lane`, the app's only non-redirect JSON
@@ -211,11 +215,12 @@ Expensive auth work uses shared atomic D1 source/account budgets with 15-minute 
 ## Database migrations
 
 Add a new numbered file under `migrations/` — never edit an applied one — then `npm run
-d1:migrate:local` (`:remote` for production). `0001_initial` → `0010_auth_rate_limits`; notably
+d1:migrate:local` (`:remote` for production). `0001_initial` → `0011_invoice_payment_url`; notably
 `0003` renamed `project_features` to `tasks` and added the notes/time tables, `0006` added the login
 lockout columns, `0007` added `must_change_password` + the `password_flash` table, and `0008` clears
 `sessions` (the id column changed from raw token to its SHA-256). `0009` adds temporary-credential
-expiry and expires legacy temporary accounts; `0010` adds shared auth-work budgets. Rebuilds
+expiry and expires legacy temporary accounts; `0010` adds shared auth-work budgets; `0011` adds the
+nullable `invoices.payment_url`. Rebuilds
 that change `CHECK` constraints or rename columns follow `PRAGMA foreign_keys=OFF` → create replacement → copy → drop →
 rename → reindex → `PRAGMA foreign_keys=ON`, per `0002`.
 

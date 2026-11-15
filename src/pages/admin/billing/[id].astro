@@ -3,6 +3,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
 import { getInvoiceById, INVOICE_STATUSES, INVOICE_STATUS_LABELS } from "../../../lib/invoices";
 import { getClientById } from "../../../lib/clients";
+import { PAYMENT_URL_MAX_LENGTH } from "../../../lib/mutation-validation";
 
 export const prerender = false;
 
@@ -18,7 +19,7 @@ if (!invoice) {
 const client = await getClientById(Astro.locals, invoice.clientId);
 const toDateInput = (ms: number | null) => (ms ? new Date(ms).toISOString().slice(0, 10) : "");
 const errorParam = Astro.url.searchParams.get("error");
-const errorMessage = errorParam === "invalid" ? "Description and amount are required." : null;
+const errorMessage = errorParam === "invalid" ? "Description and amount are required, and a payment link must be an https Stripe link." : null;
 ---
 
 <AdminLayout title={invoice.description}>
@@ -55,6 +56,11 @@ const errorMessage = errorParam === "invalid" ? "Description and amount are requ
         <div class="field">
           <label for="paidDate">Paid Date</label>
           <input id="paidDate" name="paidDate" type="date" value={toDateInput(invoice.paidDate)} />
+        </div>
+        <div class="field full">
+          <label for="paymentUrl">Payment link (optional)</label>
+          <input id="paymentUrl" name="paymentUrl" type="url" maxlength={PAYMENT_URL_MAX_LENGTH} placeholder="https://buy.stripe.com/..." aria-describedby="paymentUrl-hint" value={invoice.paymentUrl ?? ""} />
+          <small id="paymentUrl-hint" style="color: var(--ink-soft);">Stripe Payment Link or hosted-invoice URL. Clients see a Pay now button while the invoice is Sent or Overdue. Clear it to remove the button.</small>
         </div>
       </div>
       <div class="form-actions">

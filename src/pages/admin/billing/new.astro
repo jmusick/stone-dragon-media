@@ -3,6 +3,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
 import { ensureRole } from "../../../lib/http";
 import { listClients } from "../../../lib/clients";
 import { INVOICE_STATUSES, INVOICE_STATUS_LABELS } from "../../../lib/invoices";
+import { PAYMENT_URL_MAX_LENGTH } from "../../../lib/mutation-validation";
 
 export const prerender = false;
 
@@ -11,7 +12,7 @@ if (guard instanceof Response) return guard;
 
 const clients = await listClients(Astro.locals);
 const errorParam = Astro.url.searchParams.get("error");
-const errorMessage = errorParam === "invalid" ? "A client, description, and amount are required." : null;
+const errorMessage = errorParam === "invalid" ? "A client, description, and amount are required, and a payment link must be an https Stripe link." : null;
 ---
 
 <AdminLayout title="Add Invoice">
@@ -49,6 +50,11 @@ const errorMessage = errorParam === "invalid" ? "A client, description, and amou
           <div class="field">
             <label for="dueDate">Due Date</label>
             <input id="dueDate" name="dueDate" type="date" />
+          </div>
+          <div class="field full">
+            <label for="paymentUrl">Payment link (optional)</label>
+            <input id="paymentUrl" name="paymentUrl" type="url" maxlength={PAYMENT_URL_MAX_LENGTH} placeholder="https://buy.stripe.com/..." aria-describedby="paymentUrl-hint" />
+            <small id="paymentUrl-hint" style="color: var(--ink-soft);">Stripe Payment Link or hosted-invoice URL. Clients see a Pay now button while the invoice is Sent or Overdue.</small>
           </div>
         </div>
         <div class="form-actions">

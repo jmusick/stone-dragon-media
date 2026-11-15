@@ -26,7 +26,7 @@ const fields: Record<string, string[]> = {
   "/api/task-notes/delete": ["projectId", "taskId", "noteId"],
   "/api/time-entries/save": ["projectId", "taskId", "date", "amount", "unit", "note"],
   "/api/time-entries/delete": ["projectId", "taskId", "entryId"],
-  "/api/invoices/save": ["invoiceId", "clientId", "description", "amount", "status", "issuedDate", "dueDate", "paidDate"],
+  "/api/invoices/save": ["invoiceId", "clientId", "description", "amount", "status", "issuedDate", "dueDate", "paidDate", "paymentUrl"],
   "/api/invoices/delete": ["invoiceId"],
   "/api/tickets/create": ["subject", "body", "priority"],
   "/api/tickets/reply": ["ticketId", "body"],
@@ -60,6 +60,25 @@ export function amountCents(value: FormDataEntryValue | null): number | null {
   return cents <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(cents) : null;
 }
 
+/** Longest accepted invoice payment link; Stripe's hosted URLs are well under this. */
+export const PAYMENT_URL_MAX_LENGTH = 500;
+/** Hosts a client "Pay now" link may point at, so a typo or lookalike can't phish clients. */
+export const PAYMENT_URL_HOSTS = ["buy.stripe.com", "checkout.stripe.com", "invoice.stripe.com"] as const;
+
+/**
+ * Parse an invoice payment link. Empty means none (`null`); anything other than an
+ * https URL on a Stripe payment host, with no credentials or custom port, is invalid (`undefined`).
+ */
+export function paymentUrl(value: FormDataEntryValue | null): string | null | undefined {
+  const text = String(value ?? "").trim();
+  if (!text) return null;
+  if (Array.from(text).length > PAYMENT_URL_MAX_LENGTH) return undefined;
+  let url: URL;
+  try { url = new URL(text); } catch { return undefined; }
+  if (url.protocol !== "https:" || url.username || url.password || url.port) return undefined;
+  return (PAYMENT_URL_HOSTS as readonly string[]).includes(url.hostname) ? url.href : undefined;
+}
+
 export function timeMinutes(amount: FormDataEntryValue | null, unit: string): number | null {
   const text = String(amount ?? "").trim();
   if (!/^\d+(?:\.\d{1,2})?$/.test(text) || !["hours", "minutes"].includes(unit)) return null;
@@ -78,7 +97,7 @@ export function validMutationFields(path: string, form: FormData): boolean {
     if ((name.endsWith("Date") || name === "date") && text && dateValue(raw) === null) return false;
     if (enums[path]?.[name] && !enums[path][name].includes(raw)) return false;
     if (name === "backTo" && raw && !["/admin/settings", "/dashboard/settings"].includes(raw)) return false;
-    const cap = name === "phone" ? 64 : ["name", "title", "subject", "companyName", "contactName", "firstName", "lastName"].includes(name) ? 200 : 4096;
+    const cap = name === "phone" ? 64 : name === "paymentUrl" ? PAYMENT_URL_MAX_LENGTH : ["name", "title", "subject", "companyName", "contactName", "firstName", "lastName"].includes(name) ? 200 : 4096;
     if (!/password/i.test(name) && Array.from(raw).length > cap) return false;
   }
   if (path === "/api/invoices/save" && amountCents(form.get("amount")) === null) return false;

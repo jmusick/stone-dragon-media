@@ -1,7 +1,7 @@
 ---
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import { ensureClientContext } from "../../lib/http";
-import { INVOICE_STATUS_BADGES, listInvoicesByClient } from "../../lib/invoices";
+import { INVOICE_STATUS_BADGES, listInvoicesByClient, type InvoiceRecord } from "../../lib/invoices";
 
 export const prerender = false;
 
@@ -13,6 +13,10 @@ const invoices = await listInvoicesByClient(Astro.locals, client.id);
 
 const formatAmount = (cents: number) => (cents / 100).toLocaleString("en-US", { style: "currency", currency: "USD" });
 const formatDate = (ms: number | null) => (ms ? new Date(ms).toLocaleDateString("en-US", { dateStyle: "medium" }) : "—");
+// A payment link only shows while the invoice is actually owed; draft, paid and void never offer one.
+const payableUrl = (invoice: InvoiceRecord) =>
+  invoice.paymentUrl && (invoice.status === "sent" || invoice.status === "overdue") ? invoice.paymentUrl : null;
+const showPayColumn = invoices.some((invoice) => payableUrl(invoice));
 ---
 
 <DashboardLayout title="Billing">
@@ -21,13 +25,14 @@ const formatDate = (ms: number | null) => (ms ? new Date(ms).toLocaleDateString(
   ) : (
     <div class="card">
       <div class="table-scroll" role="region" aria-label="Invoices table" tabindex="0">
-        <table class="data-table">
+        <table class:list={["data-table", { "has-pay": showPayColumn }]}>
         <thead>
           <tr>
             <th>Description</th>
             <th>Amount</th>
             <th>Status</th>
             <th>Due</th>
+            {showPayColumn && <th>Payment</th>}
           </tr>
         </thead>
         <tbody>
@@ -37,6 +42,14 @@ const formatDate = (ms: number | null) => (ms ? new Date(ms).toLocaleDateString(
               <td>{formatAmount(invoice.amountCents)}</td>
               <td><span class={`badge ${INVOICE_STATUS_BADGES[invoice.status]}`}>{invoice.status}</span></td>
               <td>{formatDate(invoice.dueDate)}</td>
+              {showPayColumn && (
+                <td>
+                  {payableUrl(invoice) && (
+                    <a class="btn btn-primary pay-now" href={payableUrl(invoice)} target="_blank" rel="noopener noreferrer"
+                      aria-label={`Pay now: ${invoice.description}, ${formatAmount(invoice.amountCents)} (opens in a new tab)`}>Pay now</a>
+                  )}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -45,3 +58,14 @@ const formatDate = (ms: number | null) => (ms ? new Date(ms).toLocaleDateString(
     </div>
   )}
 </DashboardLayout>
+
+<style>
+  /* The extra column needs more room than the shared 32rem minimum; the region scrolls on narrow screens. */
+  .data-table.has-pay {
+    min-width: 40rem;
+  }
+
+  .pay-now {
+    white-space: nowrap;
+  }
+</style>

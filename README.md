@@ -48,7 +48,7 @@ A handful of clients log in at `/login` to see their own projects, invoices, and
 - **Filtering/sorting**: the admin Projects and Clients list pages support status/client filters and sortable columns via query params, following the same pattern (see either page for the template).
 - **Library code**: `src/lib/{db,auth,http,setup,security-headers,request-body,mutation-validation,password-policy,rate-limit,announce,notify,users,clients,projects,tasks,notes,timeEntries,invoices,tickets}.ts`. `src/middleware.ts` resolves the session/user/impersonated-client on every request, enforces the forced-password-change redirect, and applies the security headers to SSR responses. `src/lib/http.ts`'s `ensureRole`/`ensureClientContext` guards **return** a redirect `Response` rather than throwing one — Astro page frontmatter only short-circuits via `return <Response>`, a thrown Response is not caught by the renderer. Every call site does `if (result instanceof Response) return result;`.
 - **Ticket notifications**: client ticket creation and replies schedule owner-only email through the `EMAIL` send binding. Enable Cloudflare Email Routing, verify the destination, and set Worker variables `NOTIFY_TO` and `NOTIFY_FROM` (the latter on the routing domain); without them, sending is skipped. Alerts include the company, subject, priority, and portal link, never the message body. Admin replies and impersonation do not send alerts; delivery failures do not interrupt ticket writes.
-- **Not wired to a real billing/accounting system** — invoices are a simple manually-entered record (description, amount, status, dates) in D1, not synced from Stripe/QuickBooks/etc.
+- **Not wired to a real billing/accounting system** — invoices are a simple manually-entered record (description, amount, status, dates) in D1, not synced from Stripe/QuickBooks/etc. The owner can attach an optional Stripe Payment Link or hosted-invoice URL, which clients see as a **Pay now** button on sent or overdue invoices; status is still updated by hand.
 
 Portal layouts use `body.portal`; shared reflow rules live in `public/universal.css`. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
 
@@ -210,7 +210,8 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── 0007_temp_password_flow.sql # password_flash table + users.must_change_password
 │   ├── 0008_hash_session_tokens.sql # sessions.id now stores SHA-256 of the token (clears sessions)
 │   ├── 0009_temp_password_expiry.sql # temporary-credential expiry (expires legacy temp accounts)
-│   └── 0010_auth_rate_limits.sql # shared auth-work rate-limit budgets
+│   ├── 0010_auth_rate_limits.sql # shared auth-work rate-limit budgets
+│   └── 0011_invoice_payment_url.sql # nullable invoices.payment_url (Stripe Pay now link)
 ├── scripts/
 │   ├── seed-local.mjs           # generates local test-data SQL (not tracked; pipe into wrangler d1 execute --local)
 │   ├── unshallow.mjs            # prebuild: unshallows Workers Builds' clone so sitemap lastmod works

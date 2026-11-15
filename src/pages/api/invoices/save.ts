@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 import { readForm } from "../../../lib/request-body";
 import { ensureRole } from "../../../lib/http";
 import { createInvoice, updateInvoice, type InvoiceStatus } from "../../../lib/invoices";
-import { dateValue as parseDate, amountCents as parseAmountCents } from "../../../lib/mutation-validation";
+import { dateValue as parseDate, amountCents as parseAmountCents, paymentUrl as parsePaymentUrl } from "../../../lib/mutation-validation";
 
 export const prerender = false;
 
@@ -19,13 +19,14 @@ export const POST: APIRoute = async (context) => {
   const issuedDate = parseDate(form.get("issuedDate"));
   const dueDate = parseDate(form.get("dueDate"));
   const paidDate = parseDate(form.get("paidDate"));
+  const paymentUrl = parsePaymentUrl(form.get("paymentUrl"));
 
-  if (!description || amountCents === null) {
+  if (!description || amountCents === null || paymentUrl === undefined) {
     return redirect(invoiceId ? `/admin/billing/${invoiceId}?error=invalid` : "/admin/billing/new?error=invalid");
   }
 
   if (invoiceId) {
-    await updateInvoice(locals, invoiceId, { description, amountCents, status, issuedDate, dueDate, paidDate });
+    await updateInvoice(locals, invoiceId, { description, amountCents, status, issuedDate, dueDate, paidDate, paymentUrl });
     return redirect(`/admin/billing/${invoiceId}`);
   }
 
@@ -34,6 +35,6 @@ export const POST: APIRoute = async (context) => {
     return redirect("/admin/billing/new?error=invalid");
   }
 
-  const newId = await createInvoice(locals, { clientId, description, amountCents, status, issuedDate, dueDate, paidDate });
+  const newId = await createInvoice(locals, { clientId, description, amountCents, status, issuedDate, dueDate, paidDate, paymentUrl });
   return redirect(`/admin/billing/${newId}`);
 };

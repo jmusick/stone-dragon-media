@@ -27,6 +27,8 @@ export interface InvoiceRecord {
   issuedDate: number | null;
   dueDate: number | null;
   paidDate: number | null;
+  /** Optional Stripe Payment Link or hosted-invoice URL, validated by `paymentUrl()`. */
+  paymentUrl: string | null;
   createdAt: number;
   updatedAt: number;
 }
@@ -44,6 +46,7 @@ type InvoiceRow = {
   issued_date: number | null;
   due_date: number | null;
   paid_date: number | null;
+  payment_url: string | null;
   created_at: number;
   updated_at: number;
 };
@@ -58,6 +61,7 @@ function toInvoiceRecord(row: InvoiceRow): InvoiceRecord {
     issuedDate: row.issued_date,
     dueDate: row.due_date,
     paidDate: row.paid_date,
+    paymentUrl: row.payment_url,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -94,17 +98,17 @@ export async function getInvoiceById(locals: App.Locals, id: string): Promise<In
 
 export async function createInvoice(
   locals: App.Locals,
-  input: { clientId: string; description: string; amountCents: number; status: InvoiceStatus; issuedDate?: number | null; dueDate?: number | null; paidDate?: number | null }
+  input: { clientId: string; description: string; amountCents: number; status: InvoiceStatus; issuedDate?: number | null; dueDate?: number | null; paidDate?: number | null; paymentUrl?: string | null }
 ): Promise<string> {
   const db = ensureDB(locals);
   const id = crypto.randomUUID();
   const now = Date.now();
   await db
     .prepare(
-      `INSERT INTO invoices (id, client_id, description, amount_cents, status, issued_date, due_date, paid_date, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO invoices (id, client_id, description, amount_cents, status, issued_date, due_date, paid_date, payment_url, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     )
-    .bind(id, input.clientId, input.description.trim(), input.amountCents, input.status, input.issuedDate ?? null, input.dueDate ?? null, input.paidDate ?? null, now, now)
+    .bind(id, input.clientId, input.description.trim(), input.amountCents, input.status, input.issuedDate ?? null, input.dueDate ?? null, input.paidDate ?? null, input.paymentUrl ?? null, now, now)
     .run();
   return id;
 }
@@ -112,14 +116,14 @@ export async function createInvoice(
 export async function updateInvoice(
   locals: App.Locals,
   id: string,
-  input: { description: string; amountCents: number; status: InvoiceStatus; issuedDate?: number | null; dueDate?: number | null; paidDate?: number | null }
+  input: { description: string; amountCents: number; status: InvoiceStatus; issuedDate?: number | null; dueDate?: number | null; paidDate?: number | null; paymentUrl?: string | null }
 ): Promise<void> {
   const db = ensureDB(locals);
   await db
     .prepare(
-      `UPDATE invoices SET description = ?, amount_cents = ?, status = ?, issued_date = ?, due_date = ?, paid_date = ?, updated_at = ? WHERE id = ?`
+      `UPDATE invoices SET description = ?, amount_cents = ?, status = ?, issued_date = ?, due_date = ?, paid_date = ?, payment_url = ?, updated_at = ? WHERE id = ?`
     )
-    .bind(input.description.trim(), input.amountCents, input.status, input.issuedDate ?? null, input.dueDate ?? null, input.paidDate ?? null, Date.now(), id)
+    .bind(input.description.trim(), input.amountCents, input.status, input.issuedDate ?? null, input.dueDate ?? null, input.paidDate ?? null, input.paymentUrl ?? null, Date.now(), id)
     .run();
 }
 
