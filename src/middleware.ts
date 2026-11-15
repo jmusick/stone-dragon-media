@@ -1,5 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
-import { env as workerEnv } from "cloudflare:workers";
+import { getDB } from "./lib/db";
 import { clearSessionCookie, getSessionAndUserByToken, SESSION_COOKIE } from "./lib/auth";
 import { getClientById } from "./lib/clients";
 import { applySecurityHeaders } from "./lib/security-headers";
@@ -37,7 +37,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.impersonatedClient = null;
 
   const token = context.cookies.get(SESSION_COOKIE)?.value;
-  if (token && ((workerEnv as unknown) as { DB?: unknown }).DB) {
+  if (token && getDB()) {
     try {
       const { session, user } = await getSessionAndUserByToken(context.locals, token);
       context.locals.session = session;

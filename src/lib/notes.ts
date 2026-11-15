@@ -88,23 +88,6 @@ export async function listTaskNotesByProject(locals: App.Locals, projectId: stri
   return results.map(toNoteRecord);
 }
 
-export async function getNoteById(locals: App.Locals, table: NoteTable, id: string): Promise<NoteRecord | null> {
-  const db = ensureDB(locals);
-  const column = parentColumn(table);
-  const row = await db
-    .prepare(
-      `SELECT ${SELECT_COLUMNS(table, column)}
-       FROM ${table}
-       INNER JOIN users ON users.id = ${table}.author_user_id
-       WHERE ${table}.id = ?
-       LIMIT 1`
-    )
-    .bind(id)
-    .first<NoteRow>();
-
-  return row ? toNoteRecord(row) : null;
-}
-
 export async function createNote(
   locals: App.Locals,
   table: NoteTable,
