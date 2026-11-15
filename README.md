@@ -135,7 +135,16 @@ npm run d1:migrate:local
 
 Provision a fresh random `ADMIN_SETUP_SECRET` of at least 32 characters in local `.dev.vars` or production Worker secrets, then set `ADMIN_SETUP_ENABLED="true"` (locally, a `[vars]` entry in `wrangler.toml`; in production, a Worker variable in the Cloudflare dashboard) and visit `/admin/setup` to create the owner's admin account. Enter the secret on the setup form. First-admin creation uses an atomic empty-users check. Unset the flag and remove the setup secret immediately after bootstrap. Set `ADMIN_SETUP_EXPIRES_AT` to an ISO timestamp no more than 15 minutes in the future; setup stays disabled without a live deadline.
 
-`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-11-06). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `main`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check` and `npm run build` on Node from `.node-version`. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current. After a build, each `node scripts/test-*.mjs` regression checks the built local Worker on port 4331 with disposable synthetic D1 state (`test-runtime.mjs` is their shared harness, not a test). The exception is `test-session-credential-race.mjs`, which runs the auth modules against in-memory SQLite and needs no build. These checks require Node 24 for read-only SQLite inspection; run them sequentially. They do not modify production or the normal local database.
+`npm run check` (`astro check`) currently reports 0 errors, 0 warnings and 4 existing hints (2026-11-06). CI (`.github/workflows/ci.yml`) calls the shared [jmusick/ci](https://github.com/jmusick/ci) Baseline and Web app workflows on every pull request and push to `main`: lockfile, secret-scan and dependency checks, then `npm run cf:types`, `npm run check`, `npm run build` and `npm test` on Node from `.node-version`. Tests run through the Web app workflow's `after-build-command` input. The **CI gate** job is the single check to require in branch protection; Dependabot keeps the SHA-pinned workflow versions current.
+
+Run the regression suite locally after building:
+
+```bash
+npm run build
+npm test
+```
+
+`scripts/run-tests.mjs` discovers every `scripts/test-*.mjs` except the shared `test-runtime.mjs` harness, runs each in a separate process one at a time, and stops on the first failure with the failing script's name and a non-zero exit code. Most scripts exercise the built Worker on port 4331 with disposable synthetic D1 state; others check built output or auth modules directly. These checks require Node 24 for read-only SQLite inspection. They do not modify production or the normal local database.
 
 `node scripts/test-request-bounds.mjs` checks body and field rejection plus long Unicode passwords. Its oversized streaming case runs last because [Workers SDK issue 15709](https://github.com/cloudflare/workers-sdk/issues/15709) documents subsequent local proxy failures after body cancellation. The test verifies the application's 413 response; hosted connection reuse remains unverified.
 
@@ -206,6 +215,7 @@ npm run d1:migrate:remote   # apply to production D1
 │   ├── seed-local.mjs           # generates local test-data SQL (not tracked; pipe into wrangler d1 execute --local)
 │   ├── unshallow.mjs            # prebuild: unshallows Workers Builds' clone so sitemap lastmod works
 │   ├── test-runtime.mjs         # shared harness: built Worker on port 4331 + disposable local D1
+│   ├── run-tests.mjs            # npm test: discover and run regression scripts serially
 │   └── test-*.mjs               # regression checks (see Development)
 ├── src/
 │   ├── components/

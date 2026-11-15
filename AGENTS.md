@@ -49,13 +49,16 @@ npm run d1:migrate:local   # apply migrations/*.sql to local D1
 npm run d1:migrate:remote  # apply migrations/*.sql to production D1
 npm run cf:types           # regenerate worker-configuration.d.ts
 npm run check              # astro check (typecheck; CI runs it after cf:types)
+npm test                   # regression scripts, serially; run npm run build first
 ```
 
 Always run `npm run build` after non-trivial changes. For `/dashboard`, `/admin`, or auth work, also
 exercise the real flow via `npm run dev` — `astro check`/`build` won't catch a broken redirect or a
 missing D1 binding. As of 2026-11-06, `astro check` has 0 errors, 0 warnings and 4 existing hints.
 The checked-in `scripts/test-*.mjs` regressions exercise the built Worker with disposable local D1
-state on port 4331; run `npm run build` first. They use Node 24's read-only SQLite inspection.
+state on port 4331; run `npm run build` first, then `npm test`. The runner discovers all
+`scripts/test-*.mjs` except the shared `test-runtime.mjs` harness, runs them one at a time,
+and stops on the first failure. They use Node 24's read-only SQLite inspection.
 
 `scripts/seed-local.mjs` generates local test-data SQL (real PBKDF2 hashes) and is **not** wired into
 `package.json` — pipe its output into `npx wrangler d1 execute sdm-db --local`. Local only. The generated SQL is not tracked; generate it fresh.
@@ -70,8 +73,8 @@ v2.19.0 kept the v6 behaviour (prerendered text verified identical) rather than 
 
 `.github/workflows/ci.yml` calls the shared `jmusick/ci` workflows (Baseline and Web app), pinned by commit
 SHA with the release tag as a comment; Dependabot's `github-actions` entry proposes new releases. Web app
-runs `npm run cf:types`, `npm run check` and `npm run build`. There's no `npm test` script, so the `scripts/test-*.mjs`
-regressions are not in CI; run them locally. Require the **CI gate** job in branch protection, not the individual jobs.
+runs `npm run cf:types`, `npm run check`, `npm run build`, then `npm test` through its
+`after-build-command` input. Require the **CI gate** job in branch protection, not the individual jobs.
 
 ## Deployment
 

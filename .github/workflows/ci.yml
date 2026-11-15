@@ -27,6 +27,7 @@ jobs:
       setup-command: npm run cf:types
       typecheck-command: npm run check
       build-command: npm run build
+      after-build-command: npm test
 
   # The one check to require in branch protection. It passes only when every job above passed, so
   # adding a job never means updating the protection rule.
