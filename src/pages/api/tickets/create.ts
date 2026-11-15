@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { notifyTicket } from "../../../lib/notify";
 import { readForm } from "../../../lib/request-body";
 import { ensureClientContext } from "../../../lib/http";
 import { createTicket, type TicketPriority } from "../../../lib/tickets";
@@ -28,5 +29,6 @@ export const POST: APIRoute = async (context) => {
 
   const user = locals.user!;
   const ticketId = await createTicket(locals, { clientId: client.id, authorUserId: user.id, subject, body, priority });
+  notifyTicket(locals, { kind: "created", ticketId, companyName: client.companyName, subject, priority });
   return redirect(`/dashboard/tickets/${ticketId}`);
 };

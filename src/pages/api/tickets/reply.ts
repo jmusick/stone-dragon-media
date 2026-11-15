@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro";
+import { notifyTicket } from "../../../lib/notify";
 import { readForm } from "../../../lib/request-body";
 import { requireUser } from "../../../lib/http";
 import { addMessage, getTicketById } from "../../../lib/tickets";
@@ -32,13 +33,18 @@ export const POST: APIRoute = async (context) => {
     return redirect(backTo);
   }
 
+  let companyName: string | null = null;
   if (user.role === "client") {
     const client = await getClientByUserId(locals, user.id);
     if (!client || client.id !== ticket.clientId) {
       return redirect("/dashboard/tickets");
     }
+    companyName = client.companyName;
   }
 
   await addMessage(locals, { ticketId, authorUserId: user.id, body });
+  if (companyName !== null) {
+    notifyTicket(locals, { kind: "reply", ticketId, companyName, subject: ticket.subject, priority: ticket.priority });
+  }
   return redirect(backTo);
 };

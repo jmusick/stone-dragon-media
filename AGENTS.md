@@ -156,6 +156,11 @@ regressions are not in CI; run them locally. Require the **CI gate** job in bran
   **and** env var `ADMIN_SETUP_ENABLED === "true"` (`src/lib/setup.ts`) — plus a separately provisioned `ADMIN_SETUP_SECRET` of at least 32 characters; the form requires that secret and creation atomically checks for an empty users table. A future ISO `ADMIN_SETUP_EXPIRES_AT` deadline within 15 minutes is also required; expired/missing deadlines disable setup. All are normally unset, so both
   302 → `/login`. Set it on the Worker (dashboard → Variables and Secrets) only for a deliberate re-bootstrap, then
   unset the flag and remove the setup secret.
+- **Ticket notifications:** the `EMAIL` send binding schedules owner-only alerts for client ticket creation
+  and replies with `waitUntil`; admin replies and impersonation do not send them. Set `NOTIFY_FROM` to an
+  address on the routing domain and `NOTIFY_TO` to a verified destination in Worker variables after enabling
+  Cloudflare Email Routing. Missing configuration skips delivery. Alerts contain company, subject, priority and
+  the portal link, never the ticket message body; delivery failures log only stage and status and do not affect writes.
 - **Impersonation** ("View as client") is strictly read-only — write forms are hidden and API routes
   are protected centrally in middleware using the session impersonation flag, even if the client no longer resolves. Admin business pages redirect to the dashboard so write forms are unavailable. Only exit/logout and explicitly labelled own-account settings may mutate during client view. Keep route-level checks as defense in depth.
   `projects.client_id` is nullable (`NULL` = internal project) — use `LEFT JOIN`, not `INNER JOIN`.
