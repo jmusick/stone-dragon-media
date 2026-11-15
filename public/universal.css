@@ -976,9 +976,420 @@ body {
 	}
 }
 
+/* Portal components shared by AdminLayout and DashboardLayout (both render body.portal).
+   :where() keeps these at single-class specificity, so a page's scoped <style> still wins. */
+body:where(.portal) {
+	margin: 0;
+	background: var(--surface-strong);
+}
+
+:where(.portal) .portal-shell {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	min-height: 100vh;
+}
+
+:where(.portal) .portal-sidebar {
+	background: var(--brand-strong);
+	color: #edf6ff;
+	padding: 1.4rem 1rem;
+	display: flex;
+	flex-direction: column;
+}
+
+:where(.portal) .portal-brand {
+	display: block;
+	margin-bottom: 1.6rem;
+}
+
+:where(.portal) .portal-brand img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+:where(.portal) .portal-nav {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	flex: 1;
+}
+
+:where(.portal) .portal-nav a,
+:where(.portal) .portal-viewsite a {
+	color: rgba(237, 246, 255, 0.82);
+	text-decoration: none;
+	padding: 0.55rem 0.7rem;
+	border-radius: 0.55rem;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+:where(.portal) .portal-viewsite a {
+	display: block;
+}
+
+:where(.portal) .portal-nav a:hover,
+:where(.portal) .portal-viewsite a:hover {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+:where(.portal) .portal-nav a.active {
+	background: rgba(255, 255, 255, 0.14);
+	color: #fff;
+}
+
+:where(.portal) .portal-viewsite,
+:where(.portal) .portal-logout {
+	margin-top: 1rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.14);
+	padding-top: 1rem;
+}
+
+:where(.portal) .portal-logout button {
+	width: 100%;
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.24);
+	color: rgba(237, 246, 255, 0.9);
+	border-radius: 0.55rem;
+	padding: 0.5rem 0.7rem;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+:where(.portal) .portal-main {
+	padding: 1.6rem clamp(1.2rem, 3vw, 2.4rem);
+}
+
+:where(.portal) .portal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.4rem;
+}
+
+:where(.portal) .portal-header h1 {
+	margin: 0;
+	font-family: "Sora", sans-serif;
+	color: var(--brand-strong);
+}
+
+:where(.portal) .card {
+	border: 1px solid var(--line);
+	background: var(--surface);
+	border-radius: 0.95rem;
+	padding: 1.1rem;
+}
+
+:where(.portal) .data-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.92rem;
+}
+
+:where(.portal) .data-table th,
+:where(.portal) .data-table td {
+	text-align: left;
+	padding: 0.6rem 0.7rem;
+	border-bottom: 1px solid var(--line);
+}
+
+:where(.portal) .data-table th {
+	color: var(--brand-strong);
+	font-family: "Sora", sans-serif;
+	font-size: 0.82rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+:where(.portal) .data-table tr:last-child td {
+	border-bottom: none;
+}
+
+:where(.portal) .data-table a {
+	color: var(--brand-strong);
+	font-weight: 600;
+}
+
+:where(.portal) .empty-state {
+	color: var(--ink-soft);
+	padding: 1.5rem 0;
+	text-align: center;
+}
+
+:where(.portal) .badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.2rem 0.55rem;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+:where(.portal) .badge-neutral {
+	background: rgba(90, 128, 156, 0.16);
+	color: var(--ink-soft);
+}
+
+:where(.portal) .badge-success {
+	background: rgba(12, 117, 58, 0.12);
+	color: #0b5f33;
+}
+
+:where(.portal) .badge-warning {
+	background: rgba(173, 129, 12, 0.14);
+	color: #7d5a12;
+}
+
+:where(.portal) .badge-danger {
+	background: rgba(173, 38, 38, 0.12);
+	color: #7d2121;
+}
+
+:where(.portal) .form-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.7rem;
+}
+
+:where(.portal) .field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin-bottom: 0.85rem;
+}
+
+:where(.portal) .field.full {
+	grid-column: 1 / -1;
+}
+
+:where(.portal) .field label {
+	font-size: 0.83rem;
+	font-weight: 600;
+	color: var(--brand-strong);
+}
+
+:where(.portal) .field input,
+:where(.portal) .field select,
+:where(.portal) .field textarea {
+	width: 100%;
+	border: 1px solid rgba(108, 153, 188, 0.38);
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 0.62rem;
+	padding: 0.6rem 0.7rem;
+	font: inherit;
+	color: var(--ink);
+}
+
+:where(.portal) .field textarea {
+	min-height: 90px;
+	resize: vertical;
+}
+
+:where(.portal) .form-actions {
+	margin-top: 1rem;
+	display: flex;
+	gap: 0.6rem;
+}
+
+:where(.portal) .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.45rem;
+	padding: 0.6rem 1rem;
+	border-radius: 0.65rem;
+	border: 1px solid transparent;
+	font-weight: 600;
+	font-family: "Sora", sans-serif;
+	font-size: 0.9rem;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+:where(.portal) .btn-primary {
+	background: linear-gradient(125deg, #1f5a89, #2f709f);
+	color: #edf6ff;
+}
+
+:where(.portal) .btn-secondary {
+	background: rgba(239, 247, 253, 0.86);
+	border-color: rgba(43, 90, 124, 0.4);
+	color: var(--brand-strong);
+}
+
+:where(.portal) .notice {
+	margin-bottom: 1rem;
+	padding: 0.7rem 0.85rem;
+	border-radius: 0.65rem;
+	font-size: 0.9rem;
+}
+
+:where(.portal) .notice-success {
+	background: rgba(12, 117, 58, 0.12);
+	border: 1px solid rgba(12, 117, 58, 0.28);
+	color: #0b5f33;
+}
+
+:where(.portal) .notice-error {
+	background: rgba(173, 38, 38, 0.12);
+	border: 1px solid rgba(173, 38, 38, 0.28);
+	color: #7d2121;
+}
+
+:where(.portal) .section-gap {
+	margin-top: 1.6rem;
+}
+
+:where(.portal) .thread {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+	margin-bottom: 1.2rem;
+}
+
+:where(.portal) .thread-message {
+	border: 1px solid var(--line);
+	border-radius: 0.85rem;
+	padding: 0.8rem 0.95rem;
+	background: var(--surface);
+}
+
+:where(.portal) .thread-message.from-admin {
+	background: rgba(31, 90, 137, 0.08);
+}
+
+:where(.portal) .thread-meta {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.78rem;
+	color: var(--ink-soft);
+	margin-bottom: 0.35rem;
+}
+
+:where(.portal) .thread-body {
+	white-space: pre-wrap;
+	line-height: 1.5;
+}
+
+:where(.portal) .kanban {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.9rem;
+	align-items: start;
+}
+
+:where(.portal) .kanban-column {
+	background: rgba(239, 247, 253, 0.5);
+	border: 1px solid var(--line);
+	border-radius: 0.85rem;
+	padding: 0.7rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+:where(.portal) .kanban-column-header {
+	margin: 0;
+	font-family: "Sora", sans-serif;
+	font-size: 0.82rem;
+	font-weight: 700;
+	color: var(--brand-strong);
+	display: flex;
+	justify-content: space-between;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+:where(.portal) .kanban-count {
+	color: var(--ink-soft);
+	font-weight: 600;
+}
+
+:where(.portal) .kanban-drop-zone {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	min-height: 60px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	border-radius: 0.6rem;
+	transition: background 0.15s ease;
+}
+
+:where(.portal) .kanban-drop-zone.drag-over {
+	background: rgba(31, 90, 137, 0.08);
+}
+
+:where(.portal) .kanban-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: 0.65rem;
+	padding: 0.6rem 0.7rem;
+	text-decoration: none;
+	color: var(--ink);
+}
+
+:where(.portal) .kanban-card-title {
+	font-weight: 600;
+	font-size: 0.92rem;
+}
+
+:where(.portal) .kanban-card-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.4rem;
+	margin-top: 0.15rem;
+}
+
+:where(.portal) .kanban-assignee {
+	font-size: 0.75rem;
+	color: var(--ink-soft);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:where(.portal) .kanban-priority {
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	flex-shrink: 0;
+}
+
+:where(.portal) .kanban-priority-low {
+	color: var(--ink-soft);
+}
+
+:where(.portal) .kanban-priority-normal {
+	color: #7d5a12;
+}
+
+:where(.portal) .kanban-priority-high {
+	color: #7d2121;
+}
+
+@media (max-width: 1200px) {
+	:where(.portal) .kanban {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 640px) {
+	:where(.portal) .kanban {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* Shared portal reflow: tables scroll within a named keyboard-focusable region. */
-.portal .admin-shell,
-.portal .dash-shell {
+.portal .portal-shell {
 	grid-template-columns: 220px minmax(0, 1fr);
 }
 
@@ -1007,8 +1418,7 @@ body {
 
 .portal .header-actions,
 .portal .form-actions,
-.portal .admin-header,
-.portal .dash-header,
+.portal .portal-header,
 .portal .thread-meta,
 .portal .modal-footer,
 .portal .impersonation-banner {
@@ -1031,19 +1441,16 @@ body {
 }
 
 @media (max-width: 60rem) {
-	.portal .admin-shell,
-	.portal .dash-shell {
+	.portal .portal-shell {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.portal .admin-brand,
-	.portal .dash-brand {
+	.portal .portal-brand {
 		max-width: 12rem;
 		margin-bottom: 1rem;
 	}
 
-	.portal .admin-main,
-	.portal .dash-main {
+	.portal .portal-main {
 		padding: 1rem;
 	}
 }

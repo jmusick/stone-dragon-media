@@ -345,7 +345,7 @@ The chevron target is at least 32px square on desktop and 44px square on mobile.
 **`.site-head` is a stacking context** (`position` + `z-index`), so the `z-index` lifting
 the services dropdown over the page's `PageHero` sits on `.site-head`, not on `.nav-dropdown`.
 
-Portal layouts use `body.portal`; shared reflow rules live in `public/universal.css`. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
+Portal layouts use `body.portal` and the same `portal-shell`/`portal-sidebar`/`portal-nav`/`portal-main`/`portal-header` classes. The portal component rules both share (shell, cards, tables, forms, buttons, badges, notices, threads, kanban) and the reflow rules live in `public/universal.css`, scoped with `:where(.portal)` so they stay single-class and a page's scoped `<style>` still overrides them. Each layout's `<style is:global>` holds only its own rules: admin nav icons, `.btn-danger`, kanban drag and `.modal*` in `AdminLayout`, and the impersonation banner and `.btn[disabled]` in `DashboardLayout`. Put a portal style fix in `universal.css` once, not in both layouts. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
 
 ## Code style
 

@@ -21,11 +21,7 @@ const isActive = (prefix: string) => currentPath === prefix || currentPath.start
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" />
     <link rel="stylesheet" href="/universal.css" />
     <style is:global>
-      body {
-        margin: 0;
-        background: var(--surface-strong);
-      }
-
+      /* Shared portal rules live in public/universal.css; these are dashboard-only. */
       .impersonation-banner {
         background: #7d5a12;
         color: #fff5e0;
@@ -49,426 +45,9 @@ const isActive = (prefix: string) => currentPath === prefix || currentPath.start
         cursor: pointer;
       }
 
-      .dash-shell {
-        display: grid;
-        grid-template-columns: 220px 1fr;
-        min-height: 100vh;
-      }
-
-      .dash-sidebar {
-        background: var(--brand-strong);
-        color: #edf6ff;
-        padding: 1.4rem 1rem;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .dash-brand {
-        display: block;
-        margin-bottom: 1.6rem;
-      }
-
-      .dash-brand img {
-        display: block;
-        width: 100%;
-        height: auto;
-      }
-
-      .dash-nav {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-        flex: 1;
-      }
-
-      .dash-nav a {
-        color: rgba(237, 246, 255, 0.82);
-        text-decoration: none;
-        padding: 0.55rem 0.7rem;
-        border-radius: 0.55rem;
-        font-size: 0.92rem;
-        font-weight: 600;
-      }
-
-      .dash-nav a:hover {
-        background: rgba(255, 255, 255, 0.08);
-      }
-
-      .dash-nav a.active {
-        background: rgba(255, 255, 255, 0.14);
-        color: #fff;
-      }
-
-      .dash-viewsite {
-        margin-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.14);
-        padding-top: 1rem;
-      }
-
-      .dash-viewsite a {
-        display: block;
-        color: rgba(237, 246, 255, 0.82);
-        text-decoration: none;
-        padding: 0.55rem 0.7rem;
-        border-radius: 0.55rem;
-        font-size: 0.92rem;
-        font-weight: 600;
-      }
-
-      .dash-viewsite a:hover {
-        background: rgba(255, 255, 255, 0.08);
-      }
-
-      .dash-logout {
-        margin-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.14);
-        padding-top: 1rem;
-      }
-
-      .dash-logout button {
-        width: 100%;
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.24);
-        color: rgba(237, 246, 255, 0.9);
-        border-radius: 0.55rem;
-        padding: 0.5rem 0.7rem;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-      }
-
-      .dash-main {
-        padding: 1.6rem clamp(1.2rem, 3vw, 2.4rem);
-      }
-
-      .dash-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.4rem;
-      }
-
-      .dash-header h1 {
-        margin: 0;
-        font-family: "Sora", sans-serif;
-        color: var(--brand-strong);
-      }
-
-      .card {
-        border: 1px solid var(--line);
-        background: var(--surface);
-        border-radius: 0.95rem;
-        padding: 1.1rem;
-      }
-
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.92rem;
-      }
-
-      .data-table th,
-      .data-table td {
-        text-align: left;
-        padding: 0.6rem 0.7rem;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .data-table th {
-        color: var(--brand-strong);
-        font-family: "Sora", sans-serif;
-        font-size: 0.82rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .data-table tr:last-child td {
-        border-bottom: none;
-      }
-
-      .data-table a {
-        color: var(--brand-strong);
-        font-weight: 600;
-      }
-
-      .empty-state {
-        color: var(--ink-soft);
-        padding: 1.5rem 0;
-        text-align: center;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.2rem 0.55rem;
-        border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: 600;
-        text-transform: capitalize;
-      }
-
-      .badge-neutral {
-        background: rgba(90, 128, 156, 0.16);
-        color: var(--ink-soft);
-      }
-
-      .badge-success {
-        background: rgba(12, 117, 58, 0.12);
-        color: #0b5f33;
-      }
-
-      .badge-warning {
-        background: rgba(173, 129, 12, 0.14);
-        color: #7d5a12;
-      }
-
-      .badge-danger {
-        background: rgba(173, 38, 38, 0.12);
-        color: #7d2121;
-      }
-
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.7rem;
-      }
-
-      .field {
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        margin-bottom: 0.85rem;
-      }
-
-      .field.full {
-        grid-column: 1 / -1;
-      }
-
-      .field label {
-        font-size: 0.83rem;
-        font-weight: 600;
-        color: var(--brand-strong);
-      }
-
-      .field input,
-      .field select,
-      .field textarea {
-        width: 100%;
-        border: 1px solid rgba(108, 153, 188, 0.38);
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 0.62rem;
-        padding: 0.6rem 0.7rem;
-        font: inherit;
-        color: var(--ink);
-      }
-
-      .field textarea {
-        min-height: 90px;
-        resize: vertical;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.6rem 1rem;
-        border-radius: 0.65rem;
-        border: 1px solid transparent;
-        font-weight: 600;
-        font-family: "Sora", sans-serif;
-        font-size: 0.9rem;
-        cursor: pointer;
-        text-decoration: none;
-      }
-
-      .btn-primary {
-        background: linear-gradient(125deg, #1f5a89, #2f709f);
-        color: #edf6ff;
-      }
-
-      .btn-secondary {
-        background: rgba(239, 247, 253, 0.86);
-        border-color: rgba(43, 90, 124, 0.4);
-        color: var(--brand-strong);
-      }
-
       .btn[disabled] {
         opacity: 0.55;
         cursor: not-allowed;
-      }
-
-      .section-gap {
-        margin-top: 1.6rem;
-      }
-
-      .thread {
-        display: flex;
-        flex-direction: column;
-        gap: 0.8rem;
-        margin-bottom: 1.2rem;
-      }
-
-      .thread-message {
-        border: 1px solid var(--line);
-        border-radius: 0.85rem;
-        padding: 0.8rem 0.95rem;
-        background: var(--surface);
-      }
-
-      .thread-message.from-admin {
-        background: rgba(31, 90, 137, 0.08);
-      }
-
-      .thread-meta {
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.78rem;
-        color: var(--ink-soft);
-        margin-bottom: 0.35rem;
-      }
-
-      .thread-body {
-        white-space: pre-wrap;
-        line-height: 1.5;
-      }
-
-      .kanban {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 0.9rem;
-        align-items: start;
-      }
-
-      .kanban-column {
-        background: rgba(239, 247, 253, 0.5);
-        border: 1px solid var(--line);
-        border-radius: 0.85rem;
-        padding: 0.7rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.6rem;
-      }
-
-      .kanban-column-header {
-        margin: 0;
-        font-family: "Sora", sans-serif;
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: var(--brand-strong);
-        display: flex;
-        justify-content: space-between;
-        text-transform: uppercase;
-        letter-spacing: 0.03em;
-      }
-
-      .kanban-count {
-        color: var(--ink-soft);
-        font-weight: 600;
-      }
-
-      .kanban-drop-zone {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        min-height: 60px;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-        border-radius: 0.6rem;
-        transition: background 0.15s ease;
-      }
-
-      .kanban-drop-zone.drag-over {
-        background: rgba(31, 90, 137, 0.08);
-      }
-
-      .kanban-card {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-        background: var(--surface);
-        border: 1px solid var(--line);
-        border-radius: 0.65rem;
-        padding: 0.6rem 0.7rem;
-        text-decoration: none;
-        color: var(--ink);
-      }
-
-      .kanban-card-title {
-        font-weight: 600;
-        font-size: 0.92rem;
-      }
-
-      .kanban-card-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.4rem;
-        margin-top: 0.15rem;
-      }
-
-      .kanban-assignee {
-        font-size: 0.75rem;
-        color: var(--ink-soft);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .kanban-priority {
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        flex-shrink: 0;
-      }
-
-      .kanban-priority-low {
-        color: var(--ink-soft);
-      }
-
-      .kanban-priority-normal {
-        color: #7d5a12;
-      }
-
-      .kanban-priority-high {
-        color: #7d2121;
-      }
-
-      .form-actions {
-        margin-top: 1rem;
-        display: flex;
-        gap: 0.6rem;
-      }
-
-      .notice {
-        margin-bottom: 1rem;
-        padding: 0.7rem 0.85rem;
-        border-radius: 0.65rem;
-        font-size: 0.9rem;
-      }
-
-      .notice-success {
-        background: rgba(12, 117, 58, 0.12);
-        border: 1px solid rgba(12, 117, 58, 0.28);
-        color: #0b5f33;
-      }
-
-      .notice-error {
-        background: rgba(173, 38, 38, 0.12);
-        border: 1px solid rgba(173, 38, 38, 0.28);
-        color: #7d2121;
-      }
-
-      @media (max-width: 1200px) {
-        .kanban {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-
-      @media (max-width: 640px) {
-        .kanban {
-          grid-template-columns: 1fr;
-        }
       }
     </style>
     <slot name="head" />
@@ -483,12 +62,12 @@ const isActive = (prefix: string) => currentPath === prefix || currentPath.start
         </form>
       </div>
     )}
-    <div class="dash-shell">
-      <aside class="dash-sidebar">
-        <a class="dash-brand" href="/dashboard">
+    <div class="portal-shell">
+      <aside class="portal-sidebar">
+        <a class="portal-brand" href="/dashboard">
           <img src="/dashboard-logo.png" alt="Stone Dragon Media" width="800" height="307" />
         </a>
-        <nav class="dash-nav">
+        <nav class="portal-nav">
           <a href="/dashboard" aria-current={currentPath === "/dashboard" ? "page" : undefined} class={isActive("/dashboard") && currentPath === "/dashboard" ? "active" : undefined}>Overview</a>
           <a href="/dashboard/projects" aria-current={currentPath === "/dashboard/projects" ? "page" : isActive("/dashboard/projects") ? "location" : undefined} class={isActive("/dashboard/projects") ? "active" : undefined}>Projects</a>
           <a href="/dashboard/billing" aria-current={currentPath === "/dashboard/billing" ? "page" : isActive("/dashboard/billing") ? "location" : undefined} class={isActive("/dashboard/billing") ? "active" : undefined}>Billing</a>
@@ -497,19 +76,19 @@ const isActive = (prefix: string) => currentPath === prefix || currentPath.start
             <a href="/dashboard/settings" aria-current={currentPath === "/dashboard/settings" ? "page" : isActive("/dashboard/settings") ? "location" : undefined} class={isActive("/dashboard/settings") ? "active" : undefined}>Settings</a>
           )}
         </nav>
-        <div class="dash-viewsite">
+        <div class="portal-viewsite">
           <a href="/" target="_blank" rel="noopener">View Public Site &#8599;</a>
         </div>
         {!impersonatedClient && user && (
-          <div class="dash-logout">
+          <div class="portal-logout">
             <form method="post" action="/api/auth/logout">
               <button type="submit">Log Out</button>
             </form>
           </div>
         )}
       </aside>
-      <main class="dash-main" id="main-content" tabindex="-1">
-        <div class="dash-header">
+      <main class="portal-main" id="main-content" tabindex="-1">
+        <div class="portal-header">
           <h1>{title}</h1>
         </div>
         <slot />

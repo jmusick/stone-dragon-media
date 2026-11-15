@@ -50,7 +50,7 @@ A handful of clients log in at `/login` to see their own projects, invoices, and
 - **Ticket notifications**: client ticket creation and replies schedule owner-only email through the `EMAIL` send binding. Enable Cloudflare Email Routing, verify the destination, and set Worker variables `NOTIFY_TO` and `NOTIFY_FROM` (the latter on the routing domain); without them, sending is skipped. Alerts include the company, subject, priority, and portal link, never the message body. Admin replies and impersonation do not send alerts; delivery failures do not interrupt ticket writes.
 - **Not wired to a real billing/accounting system** — invoices are a simple manually-entered record (description, amount, status, dates) in D1, not synced from Stripe/QuickBooks/etc. The owner can attach an optional Stripe Payment Link or hosted-invoice URL, which clients see as a **Pay now** button on sent or overdue invoices; status is still updated by hand.
 
-Portal layouts use `body.portal`; shared reflow rules live in `public/universal.css`. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
+Portal layouts use `body.portal` and the same `portal-shell`/`portal-sidebar`/`portal-nav`/`portal-main`/`portal-header` classes. The portal component rules both share (shell, cards, tables, forms, buttons, badges, notices, threads, kanban) and the reflow rules live in `public/universal.css`, scoped with `:where(.portal)` so they stay single-class and a page's scoped `<style>` still overrides them. Each layout's `<style is:global>` holds only its own rules: admin nav icons, `.btn-danger`, kanban drag and `.modal*` in `AdminLayout`, and the impersonation banner and `.btn[disabled]` in `DashboardLayout`. Put a portal style fix in `universal.css` once, not in both layouts. Narrow screens stack the sidebar/forms; data tables stay in named, keyboard-focusable `.table-scroll` regions. Keep table scrolling contained and ordinary controls within the viewport.
 
 Mutation bodies are parsed once by middleware before route work: actual streamed bytes are capped at 64 KiB for URL-encoded forms and 8 KiB for lane JSON. Forms allow at most 32 unique string fields, 128-character names, 1,024 Unicode code points for passwords, 320 for email, 512 for the setup secret and 4,096 for other values. Multipart/file uploads are unsupported. Routes use `readForm`/`readJson` from `src/lib/request-body.ts`; do not parse the original consumed request again.
 
@@ -229,7 +229,7 @@ npm run d1:migrate:remote   # apply to production D1
 │   │   └── nextdoor.svg         # vendored square glyph (the simple-icons entry is a wordmark)
 │   ├── layouts/
 │   │   ├── BaseLayout.astro     # marketing pages
-│   │   ├── AdminLayout.astro    # admin shell (sidebar nav, shared table/form/badge styles)
+│   │   ├── AdminLayout.astro    # admin shell (sidebar nav, admin-only kanban/modal styles)
 │   │   └── DashboardLayout.astro # client dashboard shell (+ impersonation banner)
 │   ├── lib/                     # D1 data access + auth (db, auth, http, setup, security-headers, users, clients, projects, tasks, notes, timeEntries, invoices, tickets)
 │   │                            # + request handling: request-body, mutation-validation, password-policy, rate-limit, announce
