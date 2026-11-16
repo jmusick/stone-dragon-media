@@ -20,7 +20,9 @@ Astro 7, TypeScript, `output: 'server'` via `@astrojs/cloudflare` (v14). No UI f
 ## What belongs in this repo
 
 Only what builds, tests, deploys, or documents the code: `src/`, `public/`, `migrations/`, `scripts/`,
-config, generated types, `README.md`/`AGENTS.md`/`CLAUDE.md`/`LICENSE.md`, and `docs/` for notices
+config, generated types, `README.md`/`AGENTS.md`/`CLAUDE.md`/`LICENSE.md`, `PRODUCT.md` and
+`DESIGN.md` + `.impeccable/design.json` (the Impeccable design skill's product record and visual
+system), and `docs/` for notices
 that must ship with bundled data. Everything else goes in the local project library at
 `C:\Users\JD\projects\stone-dragon-media`, not here. Name every file and folder there in
 kebab-case:

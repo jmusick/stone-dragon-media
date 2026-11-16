@@ -1,0 +1,525 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T02:33:27.869Z",
+  "title": "Design System: Stone Dragon Media",
+  "extensions": {
+    "colorMeta": {
+      "lake": {
+        "role": "primary",
+        "displayName": "Lake",
+        "canonical": "#1d5a86",
+        "oklch": "oklch(45.1% 0.095 244)",
+        "tonalRamp": [
+          "oklch(15% 0.017 244)",
+          "oklch(26% 0.053 244)",
+          "oklch(37% 0.089 244)",
+          "oklch(48% 0.095 244)",
+          "oklch(60% 0.095 244)",
+          "oklch(72% 0.093 244)",
+          "oklch(84% 0.053 244)",
+          "oklch(95% 0.017 244)"
+        ]
+      },
+      "lake-deep": {
+        "role": "primary",
+        "displayName": "Lake Deep",
+        "canonical": "#154566",
+        "oklch": "oklch(37.5% 0.076 243)",
+        "tonalRamp": [
+          "oklch(15% 0.013 243)",
+          "oklch(26% 0.043 243)",
+          "oklch(37% 0.072 243)",
+          "oklch(48% 0.076 243)",
+          "oklch(60% 0.076 243)",
+          "oklch(72% 0.074 243)",
+          "oklch(84% 0.043 243)",
+          "oklch(95% 0.013 243)"
+        ]
+      },
+      "slate": {
+        "role": "neutral",
+        "displayName": "Slate",
+        "canonical": "#1b2933",
+        "oklch": "oklch(27.3% 0.027 240)",
+        "tonalRamp": [
+          "oklch(15% 0.005 240)",
+          "oklch(26% 0.015 240)",
+          "oklch(37% 0.025 240)",
+          "oklch(48% 0.027 240)",
+          "oklch(60% 0.027 240)",
+          "oklch(72% 0.026 240)",
+          "oklch(84% 0.015 240)",
+          "oklch(95% 0.005 240)"
+        ]
+      },
+      "slate-2": {
+        "role": "neutral",
+        "displayName": "Slate 2",
+        "canonical": "#22384a",
+        "oklch": "oklch(33.1% 0.042 244)",
+        "tonalRamp": [
+          "oklch(15% 0.007 244)",
+          "oklch(26% 0.024 244)",
+          "oklch(37% 0.040 244)",
+          "oklch(48% 0.042 244)",
+          "oklch(60% 0.042 244)",
+          "oklch(72% 0.042 244)",
+          "oklch(84% 0.024 244)",
+          "oklch(95% 0.007 244)"
+        ]
+      },
+      "stone": {
+        "role": "neutral",
+        "displayName": "Stone",
+        "canonical": "#e5e9eb",
+        "oklch": "oklch(93.2% 0.005 229)",
+        "tonalRamp": [
+          "oklch(15% 0.001 229)",
+          "oklch(26% 0.003 229)",
+          "oklch(37% 0.005 229)",
+          "oklch(48% 0.005 229)",
+          "oklch(60% 0.005 229)",
+          "oklch(72% 0.005 229)",
+          "oklch(84% 0.003 229)",
+          "oklch(95% 0.001 229)"
+        ]
+      },
+      "stone-face": {
+        "role": "neutral",
+        "displayName": "Stone Face",
+        "canonical": "#f7f8f9",
+        "oklch": "oklch(97.9% 0.002 248)",
+        "tonalRamp": [
+          "oklch(15% 0.000 248)",
+          "oklch(26% 0.001 248)",
+          "oklch(37% 0.002 248)",
+          "oklch(48% 0.002 248)",
+          "oklch(60% 0.002 248)",
+          "oklch(72% 0.002 248)",
+          "oklch(84% 0.001 248)",
+          "oklch(95% 0.000 248)"
+        ]
+      },
+      "seam": {
+        "role": "neutral",
+        "displayName": "Seam",
+        "canonical": "#c3ccd3",
+        "oklch": "oklch(84.0% 0.014 241)",
+        "tonalRamp": [
+          "oklch(15% 0.002 241)",
+          "oklch(26% 0.008 241)",
+          "oklch(37% 0.013 241)",
+          "oklch(48% 0.014 241)",
+          "oklch(60% 0.014 241)",
+          "oklch(72% 0.014 241)",
+          "oklch(84% 0.008 241)",
+          "oklch(95% 0.002 241)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "#465868",
+        "oklch": "oklch(45.2% 0.034 245)",
+        "tonalRamp": [
+          "oklch(15% 0.006 245)",
+          "oklch(26% 0.019 245)",
+          "oklch(37% 0.033 245)",
+          "oklch(48% 0.034 245)",
+          "oklch(60% 0.034 245)",
+          "oklch(72% 0.034 245)",
+          "oklch(84% 0.019 245)",
+          "oklch(95% 0.006 245)"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "#a9c1d4",
+        "oklch": "oklch(79.9% 0.038 242)",
+        "tonalRamp": [
+          "oklch(15% 0.007 242)",
+          "oklch(26% 0.021 242)",
+          "oklch(37% 0.036 242)",
+          "oklch(48% 0.038 242)",
+          "oklch(60% 0.038 242)",
+          "oklch(72% 0.037 242)",
+          "oklch(84% 0.021 242)",
+          "oklch(95% 0.007 242)"
+        ]
+      },
+      "field-edge": {
+        "role": "neutral",
+        "displayName": "Field Edge",
+        "canonical": "#7d8d9a",
+        "oklch": "oklch(63.5% 0.027 243)",
+        "tonalRamp": [
+          "oklch(15% 0.005 243)",
+          "oklch(26% 0.015 243)",
+          "oklch(37% 0.025 243)",
+          "oklch(48% 0.027 243)",
+          "oklch(60% 0.027 243)",
+          "oklch(72% 0.026 243)",
+          "oklch(84% 0.015 243)",
+          "oklch(95% 0.005 243)"
+        ]
+      },
+      "portal-ink": {
+        "role": "neutral",
+        "displayName": "Portal Ink (legacy)",
+        "canonical": "#10263b",
+        "oklch": "oklch(26.2% 0.049 249)",
+        "tonalRamp": [
+          "oklch(15% 0.009 249)",
+          "oklch(26% 0.027 249)",
+          "oklch(37% 0.046 249)",
+          "oklch(48% 0.049 249)",
+          "oklch(60% 0.049 249)",
+          "oklch(72% 0.048 249)",
+          "oklch(84% 0.027 249)",
+          "oklch(95% 0.009 249)"
+        ]
+      },
+      "portal-brand": {
+        "role": "primary",
+        "displayName": "Portal Brand (legacy)",
+        "canonical": "#1f4f77",
+        "oklch": "oklch(41.5% 0.085 247)",
+        "tonalRamp": [
+          "oklch(15% 0.015 247)",
+          "oklch(26% 0.047 247)",
+          "oklch(37% 0.080 247)",
+          "oklch(48% 0.085 247)",
+          "oklch(60% 0.085 247)",
+          "oklch(72% 0.083 247)",
+          "oklch(84% 0.047 247)",
+          "oklch(95% 0.015 247)"
+        ]
+      },
+      "portal-brand-strong": {
+        "role": "neutral",
+        "displayName": "Portal Brand Strong (legacy)",
+        "canonical": "#143755",
+        "oklch": "oklch(32.7% 0.067 247)",
+        "tonalRamp": [
+          "oklch(15% 0.012 247)",
+          "oklch(26% 0.037 247)",
+          "oklch(37% 0.063 247)",
+          "oklch(48% 0.067 247)",
+          "oklch(60% 0.067 247)",
+          "oklch(72% 0.066 247)",
+          "oklch(84% 0.037 247)",
+          "oklch(95% 0.012 247)"
+        ]
+      },
+      "portal-success": {
+        "role": "status",
+        "displayName": "Portal Success",
+        "canonical": "#0b5f33",
+        "oklch": "oklch(42.8% 0.104 154)",
+        "tonalRamp": [
+          "oklch(15% 0.018 154)",
+          "oklch(26% 0.058 154)",
+          "oklch(37% 0.098 154)",
+          "oklch(48% 0.104 154)",
+          "oklch(60% 0.104 154)",
+          "oklch(72% 0.102 154)",
+          "oklch(84% 0.058 154)",
+          "oklch(95% 0.018 154)"
+        ]
+      },
+      "portal-warning": {
+        "role": "status",
+        "displayName": "Portal Warning",
+        "canonical": "#7d5a12",
+        "oklch": "oklch(49.2% 0.095 80)",
+        "tonalRamp": [
+          "oklch(15% 0.017 80)",
+          "oklch(26% 0.053 80)",
+          "oklch(37% 0.090 80)",
+          "oklch(48% 0.095 80)",
+          "oklch(60% 0.095 80)",
+          "oklch(72% 0.093 80)",
+          "oklch(84% 0.053 80)",
+          "oklch(95% 0.017 80)"
+        ]
+      },
+      "portal-danger": {
+        "role": "status",
+        "displayName": "Portal Danger",
+        "canonical": "#7d2121",
+        "oklch": "oklch(39.7% 0.127 25)",
+        "tonalRamp": [
+          "oklch(15% 0.022 25)",
+          "oklch(26% 0.071 25)",
+          "oklch(37% 0.120 25)",
+          "oklch(48% 0.127 25)",
+          "oklch(60% 0.127 25)",
+          "oklch(72% 0.124 25)",
+          "oklch(84% 0.071 25)",
+          "oklch(95% 0.022 25)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The page's single h1, rendered only by PageHero."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles on the stone page."
+      },
+      "headline-band": {
+        "displayName": "Headline (band)",
+        "purpose": "Section titles on a slate band, in white."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card headings (h3)."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Opening paragraph, max 68ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running copy."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Primary navigation; 600 when active."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "All marketing buttons."
+      },
+      "breadcrumb": {
+        "displayName": "Breadcrumb",
+        "purpose": "Hero breadcrumb trail at Archivo's condensed 87.5% width, in Mist."
+      },
+      "portal-heading": {
+        "displayName": "Portal heading (legacy)",
+        "purpose": "Sora: portal headings, buttons, table headers, Kanban column labels."
+      },
+      "portal-body": {
+        "displayName": "Portal body (legacy)",
+        "purpose": "Outfit: portal running text."
+      }
+    },
+    "shadows": [
+      {
+        "name": "seam-edge",
+        "value": "inset 0 0 0 1px #c3ccd3",
+        "purpose": "Draws a card's edges inside its clip-path; not elevation."
+      },
+      {
+        "name": "active-rule",
+        "value": "inset 0 -2px 0 #1d5a86",
+        "purpose": "Current-page underline in the nav; inset 2px 0 0 on the left in the stacked nav and the dropdown."
+      },
+      {
+        "name": "dropdown-lift",
+        "value": "0 14px 28px rgba(27, 41, 51, 0.16)",
+        "purpose": "The services submenu only, the one floating surface."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state-change",
+        "value": "140ms ease",
+        "purpose": "Button background/border/colour changes and the dropdown chevron rotation."
+      },
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "purpose": "Hero entrance easing."
+      },
+      {
+        "name": "hero-settle",
+        "value": "1400ms, scale 1.045 to 1",
+        "purpose": "Hero image settles on load."
+      },
+      {
+        "name": "hero-rise",
+        "value": "700ms, translateY 12px to 0 with opacity, staggered 80ms per child",
+        "purpose": "Hero text rises in on load; the site's only unprompted motion, gated behind prefers-reduced-motion: no-preference."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "grid-2up",
+        "value": "1100px",
+        "purpose": "Service cards and work tiles drop from four columns to two."
+      },
+      {
+        "name": "nav-collapse",
+        "value": "920px",
+        "purpose": "Header becomes hamburger + compact Start a Project CTA; footer centres."
+      },
+      {
+        "name": "phone",
+        "value": "640px",
+        "purpose": "Single-column grids, utility socials hidden, vertical hero wash."
+      },
+      {
+        "name": "portal-kanban-2up",
+        "value": "1200px",
+        "purpose": "Portal Kanban drops from five columns to two."
+      },
+      {
+        "name": "portal-stack",
+        "value": "60rem",
+        "purpose": "Portal sidebar stacks above main."
+      },
+      {
+        "name": "portal-forms",
+        "value": "40rem",
+        "purpose": "Portal forms and actions go single column."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action colour: Lake fill, white text, 3px corners; hover deepens to Lake Deep.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/></svg>Discuss Your Project</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.78rem 1.25rem;border-radius:3px;border:1.5px solid transparent;font-family:\"Archivo\",system-ui,sans-serif;font-size:0.98rem;font-weight:600;line-height:1.2;text-decoration:none;cursor:pointer;transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease;}.ds-btn:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}.ds-btn-primary{background:#1d5a86;color:#fff;}.ds-btn-primary:hover{background:#154566;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Slate outline on stone; fills solid Slate on hover.",
+      "html": "<a class=\"ds-btn ds-btn-secondary\" href=\"#\">View Services</a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.78rem 1.25rem;border-radius:3px;border:1.5px solid transparent;font-family:\"Archivo\",system-ui,sans-serif;font-size:0.98rem;font-weight:600;line-height:1.2;text-decoration:none;cursor:pointer;transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease;}.ds-btn:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}.ds-btn-secondary{background:transparent;border-color:#1b2933;color:#1b2933;}.ds-btn-secondary:hover{background:#1b2933;color:#fff;}"
+    },
+    {
+      "name": "Buttons on Slate",
+      "kind": "button",
+      "refersTo": "button-primary-on-slate",
+      "description": "Hero and band variants: white primary hovering to Mist, Mist-outlined secondary hovering to white.",
+      "html": "<div class=\"ds-on-slate\"><a class=\"ds-btn ds-btn-primary-slate\" href=\"#\">Discuss Your Project</a><a class=\"ds-btn ds-btn-secondary-slate\" href=\"#\">View Services</a></div>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.78rem 1.25rem;border-radius:3px;border:1.5px solid transparent;font-family:\"Archivo\",system-ui,sans-serif;font-size:0.98rem;font-weight:600;line-height:1.2;text-decoration:none;cursor:pointer;transition:background-color 140ms ease,border-color 140ms ease,color 140ms ease;}.ds-btn:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}.ds-on-slate{display:flex;flex-wrap:wrap;gap:0.75rem;padding:1.5rem;background:#1b2933;}.ds-on-slate .ds-btn:focus-visible{outline-color:#a9c1d4;}.ds-btn-primary-slate{background:#fff;color:#1b2933;}.ds-btn-primary-slate:hover{background:#a9c1d4;}.ds-btn-secondary-slate{background:transparent;border-color:#a9c1d4;color:#fff;}.ds-btn-secondary-slate:hover{background:#fff;color:#1b2933;}"
+    },
+    {
+      "name": "Chamfered Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Stone Face card with the top-right corner cut, a 1px seam along the diagonal and every edge, and a 6% icon watermark. No drop shadow.",
+      "html": "<article class=\"ds-card\"><svg class=\"ds-card-mark\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"16 18 22 12 16 6\"/><polyline points=\"8 6 2 12 8 18\"/></svg><h3 class=\"ds-card-title\"><a href=\"#\">Design &amp; Development</a></h3><p class=\"ds-card-body\">Custom websites and business applications built to be maintained.</p><a class=\"ds-card-link\" href=\"#\">Explore design &amp; development</a></article>",
+      "css": ".ds-card{--slate:#1b2933;--stone:#e5e9eb;--stone-face:#f7f8f9;--seam:#c3ccd3;--lake:#1d5a86;--lake-deep:#154566;--mist:#a9c1d4;--ink-soft:#465868;--cut:1.1rem;--edge:calc(var(--cut) * 0.7071);position:relative;overflow:hidden;max-width:22rem;padding:1.35rem 1.5rem 1.5rem;background:linear-gradient(225deg,var(--seam) calc(var(--edge) + 1px),var(--stone-face) 0);box-shadow:inset 0 0 0 1px var(--seam);clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);font-family:\"Archivo\",system-ui,sans-serif;font-size:1.0625rem;line-height:1.6;}.ds-card>:not(.ds-card-mark){position:relative;z-index:1;}.ds-card-mark{position:absolute;right:-0.6rem;bottom:-0.7rem;height:82%;width:auto;aspect-ratio:1/1;color:var(--slate);opacity:0.06;pointer-events:none;}.ds-card-title{font-family:\"Schibsted Grotesk\",\"Archivo\",system-ui,sans-serif;font-weight:700;letter-spacing:-0.015em;line-height:1.12;margin:0 0 0.5rem;font-size:1.15rem;color:var(--slate);}.ds-card-title a{color:inherit;text-decoration:none;}.ds-card-title a:hover{color:var(--lake);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:0.18em;}.ds-card-body{margin:0;color:var(--ink-soft);}.ds-card-link{display:inline-block;margin-top:0.9rem;font-weight:600;font-size:0.95rem;color:var(--lake);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:0.2em;}.ds-card-link:hover{color:var(--lake-deep);text-decoration-thickness:2px;}.ds-card a:focus-visible{outline:2px solid var(--lake);outline-offset:3px;}"
+    },
+    {
+      "name": "Screenshot Tile",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Portfolio thumbnail with the chamfer, a bold name and Ink Soft description; hover brightens the image and underlines the name in Lake.",
+      "html": "<a class=\"ds-shot\" href=\"#\"><span class=\"ds-shot-img\" role=\"img\" aria-label=\"Firelands Current homepage\"></span><span class=\"ds-shot-name\">Firelands Current</span><span class=\"ds-shot-desc\">A digital newspaper for the Firelands region.</span></a>",
+      "css": ".ds-shot{display:block;max-width:20rem;color:#1b2933;text-decoration:none;font-family:\"Archivo\",system-ui,sans-serif;}.ds-shot-img{display:block;width:100%;aspect-ratio:1180/615;background:linear-gradient(180deg,#22384a 0 18%,#f7f8f9 18% 100%);clip-path:polygon(0 0,calc(100% - 1.1rem) 0,100% 1.1rem,100% 100%,0 100%);}.ds-shot-name{display:block;margin-top:0.6rem;font-weight:600;}.ds-shot-desc{display:block;margin-top:0.3rem;font-size:0.95rem;line-height:1.5;color:#465868;}.ds-shot:hover .ds-shot-name{color:#1d5a86;text-decoration:underline;text-underline-offset:0.18em;}.ds-shot:hover .ds-shot-img{filter:brightness(1.06);}.ds-shot:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "White field, 1px Field Edge border at 3:1, 3px corners; border turns Lake on focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-label\">Email <span class=\"ds-req\" aria-hidden=\"true\">*</span></span><input class=\"ds-input\" type=\"email\" placeholder=\"you@business.com\" /></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:0.35rem;max-width:22rem;font-family:\"Archivo\",system-ui,sans-serif;}.ds-label{font-size:0.9rem;font-weight:600;color:#1b2933;}.ds-req{color:#1d5a86;}.ds-input{width:100%;box-sizing:border-box;border:1px solid #7d8d9a;background:#fff;border-radius:3px;padding:0.7rem 0.8rem;font:inherit;font-size:1rem;color:#1b2933;}.ds-input:focus{border-color:#1d5a86;}.ds-input:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Slate Archivo labels turning Lake on hover; current page marked by a 2px Lake inset underline; Client Login set apart by a Seam divider.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Example\"><a href=\"#\">Home</a><a href=\"#\" class=\"ds-active\" aria-current=\"page\">Services</a><a href=\"#\">Work</a><a href=\"#\">About</a><a href=\"#\">Contact</a><a href=\"#\" class=\"ds-login\">Client Login</a></nav>",
+      "css": ".ds-nav{display:flex;flex-wrap:wrap;align-items:center;gap:0.15rem;padding:0.85rem 1rem;background:#f7f8f9;border-bottom:1px solid #c3ccd3;font-family:\"Archivo\",system-ui,sans-serif;}.ds-nav a{color:#1b2933;font-size:0.95rem;font-weight:500;padding:0.5rem 0.6rem;text-decoration:none;white-space:nowrap;}.ds-nav a:hover{color:#1d5a86;}.ds-nav a:focus-visible{outline:2px solid #1d5a86;outline-offset:3px;}.ds-nav a.ds-active{font-weight:600;box-shadow:inset 0 -2px 0 #1d5a86;}.ds-nav .ds-login{position:relative;margin-left:0.85rem;color:#465868;}.ds-nav .ds-login::before{content:\"\";position:absolute;left:-0.5rem;top:50%;transform:translateY(-50%);width:1px;height:1.1rem;background:#c3ccd3;}"
+    },
+    {
+      "name": "Page Hero",
+      "kind": "custom",
+      "refersTo": "page-hero",
+      "description": "Full-bleed photo under a Slate wash, single h1 in Schibsted Grotesk, bottom edge cleaved on the diagonal. (A blue stand-in replaces the photo here.)",
+      "html": "<div class=\"ds-hero\"><div class=\"ds-hero-inner\"><ol class=\"ds-crumbs\"><li><a href=\"#\">Home</a></li><li>Services</li></ol><h1 class=\"ds-hero-title\">Web Design Services in Sandusky, OH</h1><p class=\"ds-hero-desc\">Custom websites and business applications, with ongoing support after launch.</p></div></div>",
+      "css": ".ds-hero{--cleave:clamp(2rem,5vw,4.5rem);position:relative;display:flex;align-items:center;min-height:320px;color:#fff;background:linear-gradient(90deg,rgba(27,41,51,0.94) 0%,rgba(27,41,51,0.8) 34%,rgba(27,41,51,0.25) 68%,rgba(27,41,51,0.05) 100%),#3d6f93;clip-path:polygon(0 0,100% 0,100% calc(100% - var(--cleave)),64% 100%,0 100%);font-family:\"Archivo\",system-ui,sans-serif;}.ds-hero-inner{padding:2.5rem 2rem calc(2rem + var(--cleave));}.ds-crumbs{display:flex;gap:0.55rem;margin:0 0 1.1rem;padding:0;list-style:none;font-size:0.92rem;font-weight:500;font-stretch:87.5%;color:#a9c1d4;}.ds-crumbs li+li::before{content:\"/\";margin-right:0.55rem;opacity:0.7;}.ds-crumbs a{color:#fff;text-underline-offset:0.2em;text-decoration-color:rgba(255,255,255,0.4);}.ds-hero-title{font-family:\"Schibsted Grotesk\",\"Archivo\",system-ui,sans-serif;font-weight:700;letter-spacing:-0.015em;line-height:1.12;max-width:20ch;margin:0;font-size:clamp(2.1rem,4.6vw,3.6rem);letter-spacing:-0.02em;}.ds-hero-desc{max-width:34rem;margin:1.1rem 0 0;font-size:1.1rem;line-height:1.55;color:#dfe7ed;}"
+    },
+    {
+      "name": "Slate Band",
+      "kind": "custom",
+      "refersTo": "band",
+      "description": "Full-bleed Slate section whose top-left edge is cleaved, mirroring the hero.",
+      "html": "<section class=\"ds-band\"><h2 class=\"ds-band-title\">Areas We Serve</h2><p>Stone Dragon Media is based in Sandusky, Ohio, and works on site across Erie County.</p></section>",
+      "css": ".ds-band{--cleave:clamp(2rem,5vw,4.5rem);padding:calc(var(--cleave) + 2rem) 2rem 2.5rem;background:#1b2933;color:#dfe7ed;clip-path:polygon(0 var(--cleave),36% 0,100% 0,100% 100%,0 100%);font-family:\"Archivo\",system-ui,sans-serif;font-size:1.0625rem;line-height:1.6;}.ds-band-title{font-family:\"Schibsted Grotesk\",\"Archivo\",system-ui,sans-serif;font-weight:700;letter-spacing:-0.015em;line-height:1.12;margin:0 0 1rem;font-size:clamp(1.6rem,3vw,2.4rem);color:#fff;}.ds-band p{max-width:62ch;margin:0;}"
+    },
+    {
+      "name": "Portal Button (legacy)",
+      "kind": "button",
+      "refersTo": "portal-button-primary",
+      "description": "Legacy portal primary: Sora, rounded 0.65rem, gradient fill. Documented for consistency; converge toward the marketing button.",
+      "html": "<button class=\"ds-pbtn\" type=\"button\">Save changes</button>",
+      "css": ".ds-pbtn{display:inline-flex;align-items:center;justify-content:center;gap:0.45rem;padding:0.6rem 1rem;border-radius:0.65rem;border:1px solid transparent;font-family:\"Sora\",sans-serif;font-weight:600;font-size:0.9rem;cursor:pointer;background:linear-gradient(125deg,#1f5a89,#2f709f);color:#edf6ff;}.ds-pbtn:focus-visible{outline:3px solid #143755;outline-offset:2px;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Cut Stone",
+    "overview": "The marketing site is one piece of dressed slate, split cleanly in a few deliberate places. The\npalette comes from the logo's faceted slate stone and the Lake Erie hero photography: a solid light\nstone page, slate for the heavy surfaces, and one lake blue for action and links. The only ornament\nis the cut itself. Cards lose one corner to a chamfer, the hero's bottom edge is cleaved on the\ndiagonal, and the full-bleed slate band takes the matching cut along its top, so a page reads as a\nsingle stone split in two places.\n\nThe mood is **sturdy, plain-spoken, and precise**. Surfaces are flat and change tone instead of\ncasting shadows. Corners are either square, cut, or barely softened (3px). Type is a compact,\nheavy newspaper grotesque over a straightforward sans body. The craft is in exact joins (a 1px seam\ndrawn precisely along a chamfer) rather than in effects. The site explicitly rejects\n**startup SaaS gloss**: gradients, glassmorphism, glowing blobs, and purple-blue hero washes.\n\nThe client portal (`/dashboard`, `/admin`) is currently a **legacy dialect** with its own fonts,\nrounded corners, and a gradient button. It is documented below so it stays consistent, but it is\nmarked to **converge toward the Cut Stone system over time**. New portal work moves it closer;\nnothing moves the marketing site toward it.",
+    "keyCharacteristics": [
+      "Solid stone page, slate surfaces, one lake-blue accent.",
+      "The facet (chamfered corner, cleaved edge) is the only decorative device.",
+      "Flat at rest: depth comes from tone and seams, not shadows.",
+      "Schibsted Grotesk bold headings over an Archivo body.",
+      "One motion moment per page: the hero settling in on load."
+    ],
+    "rules": [
+      {
+        "name": "The One Blue Rule",
+        "body": "Lake is the only saturated colour on a marketing page. It marks what can be\nclicked or what has focus, never decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Solid Ground Rule",
+        "body": "The marketing page background is solid Stone. No gradients,\ntextures, or tinted sections. Contrast is only promised against Stone and Stone Face.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Face Per Role Rule",
+        "body": "Schibsted Grotesk is used only for `h1`–`h3`, at weight 700.\nEverything else is Archivo. Fonts load only the axes in use, so no new weights or widths appear\nwithout changing the font link.",
+        "section": "typography"
+      },
+      {
+        "name": "The Keyword Headline Rule",
+        "body": "Headings carry their topic (\"Our Web Design & Digital Services\"),\nnever a bare label. This is both an SEO requirement and the plain-spoken voice.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Drop Shadow Rule",
+        "body": "Cards, tiles, buttons, and bands never cast a shadow. A surface earns\nseparation from a tone change and a seam. Only a genuinely floating menu gets a lift.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two Cuts Rule",
+        "body": "The facet appears in exactly two forms: the corner chamfer on cards and\nscreenshots, and the cleaved edge on the hero bottom and the band top. Nothing else gets angles,\nnotches, or diagonal dividers.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** keep the page background solid Stone and put content on Stone Face cards separated by 1px Seam joints.",
+      "**Do** use Lake only for things that act or have focus: buttons, links, the active rule, and focus outlines.",
+      "**Do** confine the facet to the card and screenshot chamfer (`cut`, 1.1rem) and the hero and band cleave (`cleave`).",
+      "**Do** set every `h1`–`h3` in Schibsted Grotesk 700 at -0.015em (the hero uses -0.02em) and everything else in Archivo.",
+      "**Do** keep button states to colour changes over 140ms ease, and gate every animation behind `prefers-reduced-motion: no-preference`.",
+      "**Do** check 4.5:1 text contrast against Stone and Stone Face, and 3:1 for field edges (Field Edge on white).",
+      "**Do** move the portal toward these shapes and flat fills when touching it, and put shared portal fixes in `public/universal.css` once."
+    ],
+    "donts": [
+      "**Don't** use startup SaaS gloss: gradients, glassmorphism, glowing blobs, or purple-blue hero washes. The hero's only gradient is the Slate photo wash.",
+      "**Don't** add drop shadows to cards, tiles, buttons, or bands. Only the floating dropdown is lifted.",
+      "**Don't** add angles, notches, or diagonal dividers anywhere beyond the Two Cuts.",
+      "**Don't** round marketing cards or use pill-shaped buttons. Corners are square, cut, or 3px.",
+      "**Don't** introduce a second accent colour, or use Lake decoratively.",
+      "**Don't** add motion beyond the hero's settle-in on load. Nothing else animates unprompted.",
+      "**Don't** carry the portal's Sora/Outfit fonts, rounded corners, or gradient button onto marketing pages."
+    ]
+  }
+}
